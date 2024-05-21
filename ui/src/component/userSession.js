@@ -1,13 +1,9 @@
-// const logout = () => {
-//     window.open("http://localhost:8000/auth/logout", "_self");
-// };
-
 let loggedOut = false; // Flag to track whether logout has occurred
 
 const logout = () => {
     if (!loggedOut) {
         loggedOut = true; // Set loggedOut flag to true to prevent repeated logout
-        window.open("http://localhost:8000/auth/logout", "_self");
+        window.open(`${process.env.REACT_APP_SERVER_DOMAIN}/auth/logout`, "_self");
     }
 };
 
@@ -22,7 +18,7 @@ const userSession = async () => {
         });
 
         const resData = await response.json()
-        console.log(resData.member)
+        
         if (resData.sessionActive) {
             return { sessionActive: resData.sessionActive, member: resData.member };
         }else{

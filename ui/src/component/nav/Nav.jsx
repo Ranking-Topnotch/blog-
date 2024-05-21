@@ -35,7 +35,7 @@ const Nav = ({ member }) => {
     }
    
     const logout = () => {
-        window.open("http://localhost:8000/auth/logout", "_self")
+        window.open(`${process.env.REACT_APP_SERVER_DOMAIN}/auth/logout`, "_self")
     }
 
     const handleClickOutside = (event) => {

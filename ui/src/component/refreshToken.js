@@ -1,5 +1,5 @@
 const logout = () => {
-    window.open("http://localhost:8000/auth/logout", "_self");
+    window.open(`${process.env.REACT_APP_SERVER_DOMAIN}/auth/logout`, "_self");
 };
 
 const refreshToken = async () => {
@@ -24,7 +24,7 @@ const refreshToken = async () => {
             if(resData.message === false){
                 logout()
             }
-            console.log(resData);
+            
             return true; 
         } catch (error) {
             console.error("Error refreshing token:", error);

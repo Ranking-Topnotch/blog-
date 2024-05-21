@@ -56,7 +56,6 @@ const RegisterForm = () => {
 
        const fetchRes = await fetchData.json()
        toast(fetchRes.message)
-       console.log(fetchRes)
       
       if(fetchRes.message === 'Verification otp email send'){
         navigate('/otpverification', { state: fetchRes.data });

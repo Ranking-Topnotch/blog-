@@ -4,7 +4,7 @@ import styles from "./login.module.css";
 const Login = ({ passedMember }) => {
 
   const google = () => {
-    window.open("http://localhost:8000/auth/google", "_self")
+    window.open(`${process.env.REACT_APP_SERVER_DOMAIN}/auth/google`, "_self")
    }
 
   return (

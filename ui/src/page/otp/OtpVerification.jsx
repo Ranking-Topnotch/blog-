@@ -20,7 +20,6 @@ const OtpVerification = () => {
        userId: userId || '' ,
        email: email || ''
     })
-    console.log(otpForm)
     
     useEffect( () => {
         if(userId){

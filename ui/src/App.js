@@ -26,10 +26,10 @@ const App = () => {
       console.error("Error checking session:", error);
     });
   }, []);
-
+   
   useEffect(() => {
     const getUser = () => {
-      fetch('http://localhost:8000/auth/login/success', {
+      fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/auth/login/success`, {
         method: 'GET',
         credentials: 'include',
         headers: {

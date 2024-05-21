@@ -25,7 +25,6 @@ const  BlogId = ({ member }) => {
   
   const { id } = useParams();
   const navigate = useNavigate()
-  console.log(blog)
 
   // fetching the blog by id that come's from params
 
@@ -101,7 +100,6 @@ const  BlogId = ({ member }) => {
   const deleteBlog = async (memberId, blogId) => {
     await refreshToken()
     const accessToken = `; ${document.cookie}`.split(`; accessToken=`).pop().split(';').shift();
-    console.log(accessToken)
       const fetchData = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/deleteblog`, {
         method: "POST",
         headers: {

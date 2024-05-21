@@ -2,7 +2,7 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const passport = require('passport')
 const connectToDb = require('./config/dbConnection')
 const Member = require('./model/memberModel')
-
+const jwt = require('jsonwebtoken')
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET
@@ -14,9 +14,6 @@ passport.use(new GoogleStrategy({
     scope: ['email']
   },
   async function(accessToken, refreshToken, profile, cb) {
-    console.log(profile.picture)
-    console.log(profile.photos[0])
-    console.log(profile.photos[0].value)
     try{
       await connectToDb()
       
@@ -34,8 +31,10 @@ passport.use(new GoogleStrategy({
 
       await newMember.save()
 
-      return cb(null, newMember);
-      
+      const accessToken = jwt.sign({email: profile._json.email, username: profile.name.givenName, _id: newMember._id, img: newMember.img}, process.env.ACCESS_TOKEN_KEY, { expiresIn: "1m"} )
+      const refreshToken = jwt.sign({email: profile._json.email, username: profile.name.givenName, _id: newMember._id, img: newMember.img}, process.env.REFRESH_TOKEN_KEY, { expiresIn: "10m"} )
+        
+      return cb(null, newMember, { accessToken, refreshToken });
     }catch(err){
       return cb(err);
     }
