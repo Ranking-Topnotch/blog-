@@ -1,0 +1,91 @@
+.loginform{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border: 3px solid white;
+  border-radius: 15px;
+}
+
+.formcon{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    width: 50%;
+}
+
+.github{
+  padding: 20px;
+  cursor: pointer;
+  background-color: #fff;
+  color: #000;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  margin-bottom: 2em;
+}
+
+.form{
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  width: 100%;
+}
+
+.form input{
+  background-color: transparent;
+  color: var(--color-white);
+  border: 2px solid white;
+  outline: none;
+  border-radius: 5px;
+  padding: 10px;
+  margin-block-end: 2em;
+}
+  
+.form button{
+    padding: 20px;
+    cursor: pointer;
+    background-color: var(--color-black);
+    color: var(--color-white);
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    margin-top: 1.5em;
+}
+
+.link{
+  color: var(--color-white);
+  width: 45%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+}
+
+.link p{
+  color: var(--color-black);
+  background-color: var(--color-white);
+  padding: 10px;
+  border-radius: 10px;
+  width: 6em;
+  margin-top: 1em;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+@media screen and (max-width: 850px){
+  .loginform{
+    flex-direction: column;
+  }
+
+  .formcon{
+    width: 80%;
+  }
+}
+
+@media screen and (max-width: 750px){
+  .link{
+    font-size: 20px;
+  }
+}

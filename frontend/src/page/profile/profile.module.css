@@ -1,0 +1,211 @@
+.profileHead{
+    margin: auto;
+    width: 70%;
+    color: white;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    margin-top: 3em;
+}
+
+.avatar_con{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-block-end: 1em;
+}
+
+.avatar{
+    border-radius: 50%;
+}
+
+.about{
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+.aboutDetail{
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 2em;
+}
+
+.aboutDetail p{
+    padding-right: 1em; 
+}
+
+.blogcontain{
+
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.blogcon{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1em;
+}
+
+.blog{
+    width: 70%;
+}
+
+.usercon{
+    display: flex;
+    margin-bottom: 1em;
+}
+
+.user{
+    border-radius: 10px;
+    margin-right: 1em;
+}
+
+.username{
+    color: var(--color-white);
+}
+
+.date{
+    color: var(--color-white);
+}
+
+.head{
+    color: var(--color-white);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.body{
+    color: var(--color-white);
+    margin-bottom: 1em;
+}
+
+.link{
+    background-color: var(--color-white);
+    color: var(--color-black);
+    padding: 0.5em;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+
+.button_con{
+    position: absolute;
+    width: 60%;
+}
+
+.editButton{
+    padding: 10px;
+    cursor: pointer;
+    background-color: var(--color-black);
+    color: var(--color-white);
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+}
+
+section{
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-block-start: 30px;
+    border-radius: 20px;
+    width: 60%;
+    margin: auto;
+    background-color: rgb(100, 44, 100);
+    opacity: 5;
+}
+
+.close{
+    position: absolute;
+    top: 10px;
+    right: 20px;
+}
+
+form{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    width: 80%;
+}
+  
+form input{
+    background-color: transparent;
+    color: var(--color-white);
+    border: 2px solid white;
+    outline: none;
+    border-radius: 5px;
+    padding: 10px;
+    margin-block-end: 2em;
+}
+
+.profileInput{
+    border: 2px solid white;
+    outline: none;
+  height: 5em;
+  margin-bottom: 2em;
+  border-radius: 5px;
+  background-color: transparent;
+  color: var(--color-white);
+  font-weight: bold;
+  margin-top: 1em;
+  resize: none;
+  padding: 20px;
+}
+    
+form button{
+    padding: 20px;
+    cursor: pointer;
+    background-color: var(--color-black);
+    color: var(--color-white);
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    margin-top: 0.5em;
+    margin-bottom: 1em;
+}
+
+@media screen and (max-width: 1200px){
+    .blogcontain{
+        width: 90%;
+    }
+    .blog{
+        width: 90%;
+    }
+    
+    .imgcon img{
+        margin-right: 3em;
+    }
+}
+
+@media screen and (max-width: 800px){
+    .blogcon{
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .imgcon img{
+        width: 100%;
+        height: 100%;
+        margin-left: 0;
+    }
+
+    .blog{
+        margin-top: 2em;
+    }
+}
+
+@media screen and (max-width: 500px){
+    .postHead{
+        width: 95%;
+    }
+
+    section{
+        width: 95%;
+    }
+}
+

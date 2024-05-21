@@ -1,0 +1,101 @@
+.comment_con{
+    width: 80%;
+    margin-top: 1em;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-block-end: 1em;
+    color: var(--color-white);
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 20px;
+}
+
+.userconn{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1em;
+}
+
+.delete{
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.delete:hover{
+    color: red;
+}
+
+
+.usercon{
+    display: flex;
+}
+
+.user{
+    border-radius: 50%;
+    margin-right: 0.5em;
+}
+
+.username{
+    color: var(--color-white);
+    margin-bottom: 0.5em;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 12px;
+}
+
+.body{
+    color: var(--color-white);
+    font-family: 'Times New Roman', Times, serif;
+}
+
+@media screen and (max-width: 1000px){
+    .user{
+        margin-right: 5px;
+    }
+    .content{
+        width: 80%;
+        margin-top: 2em;
+    }
+
+    .usercon{
+        width: 80%;
+        align-items: start;
+        justify-content: center;
+    }
+
+    .comment_con{
+        width: 80%;
+        margin: 0;
+        margin-block-end: 0;
+    }
+
+    .body{
+        font-size: 14px;
+    }
+
+    .checkedComment{
+        font-size: 18px;
+    }
+}
+
+@media screen and (max-width: 500px){
+    .comment_con{
+        width: 95%;
+        margin-top: 2em;
+    }
+
+    .checkedComment{
+        font-size: 14px;
+    }
+
+    .usercon{
+        width: 95%;
+    }
+
+    .user{
+        width: 20px;
+        height: 20px;
+    }
+}
