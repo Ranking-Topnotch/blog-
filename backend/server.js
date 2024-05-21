@@ -48,7 +48,7 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: "https://blog-7igumx4ov-luke-emmanuels-projects.vercel.app",
     methods: "GET,POST,PUT,DELETE",
     credentials: true
 }))
