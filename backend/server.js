@@ -38,7 +38,12 @@ app.use(
       secret: 'secret', // Change this to a secret string
       resave: false,
       saveUninitialized: false,
-      cookie: { secure: true }, // Set secure to true if using HTTPS
+      cookie: {
+          secure: process.env.NODE_ENV === 'production', // Only set secure to true if using HTTPS in production
+          httpOnly: true,
+          sameSite: 'lax'
+      }, // Set secure to true if using HTTPS
+        
     })
 );
 
@@ -81,6 +86,7 @@ app.use('/auth', authRoute)
 
 app.get('/', ( req, res ) => {
     console.log('Server is running')
+    res.send('Server is running')
 })
 
 app.post('/register', async (req, res) => {
