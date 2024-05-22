@@ -50,9 +50,11 @@ app.use(passport.session())
 app.use(cors({
     origin: "https://blog-khaki-tau-50.vercel.app",
     methods: "GET,POST,PUT,DELETE",
-    credentials: true
+    credentials: true,
+    optionsSuccessStatus: 204
 }))
 
+app.options('*', cors());//added
 //setting up nodemailer
 let transporter = nodemailer.createTransport({
     service: "gmail",
