@@ -12,6 +12,7 @@ import userSession from './component/userSession';
 import './App.css'
 import Profile from './page/profile/Profile'
 import OtpVerification from './page/otp/OtpVerification'
+import Contact from './page/contact/Contact'
 
 
 const App = () => {
@@ -57,7 +58,6 @@ const App = () => {
   const passedMember = (member) => {
     setMember(member);
   }
-  console.log(member)
   
   const pages = createBrowserRouter(createRoutesFromElements(
     <Route element={<Layout member={ member }/>}>
@@ -65,6 +65,7 @@ const App = () => {
       <Route path='/blog' element={ member._id ? <Blog member={ member }/> : <Login passedMember={passedMember} />} /> 
       <Route path='/blog/:id' element={ member._id ? <BlogId member={ member }/> : <Login passedMember={passedMember} /> } />
       <Route path='/newblog' element={<Postblog member={ member }/>} />
+      <Route path='/contact' element={<Contact />} />
       <Route path='/login' element={<Login passedMember={passedMember}/>} />
       <Route path='/register' element={<Register />} />
       <Route path='/otpverification' element={<OtpVerification />} />

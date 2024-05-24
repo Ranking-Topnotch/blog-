@@ -1,0 +1,13 @@
+.contact{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.contact p {
+    color: white;
+}
+
+.contact span{
+    color: brown;
+}

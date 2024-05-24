@@ -79,6 +79,7 @@ app.use('/auth', authRoute)
 
 app.get('/', ( req, res ) => {
     console.log('Server is running')
+    res.send('Server is running')
 })
 
 app.post('/register', async (req, res) => {
@@ -348,6 +349,10 @@ app.post('/newblog', async ( req, res ) => {
         
         let newBlog = await Blog.findOne({ body })
 
+        if(!body){
+            return res.json({ message: "Body cannot be empty"})
+        }
+
         if(!newBlog){
             newBlog = await Blog({
                 userId,
@@ -445,23 +450,25 @@ app.post('/deleteComment', async ( req, res ) => {
 })
 
 app.post('/profile', async ( req, res ) => {
-    const { userId, about, role, link, address } = req.body
-
+    const { userId, img, about, role, link, address } = req.body
+    
     try{
         await connectToDb()
-
+        const memberDetail = await Member.findOne({ _id: userId })
         const updateMember = await Member.findOneAndUpdate({ _id: userId }, {
-            about: about, 
-            role: role, 
-            link: link, 
-            address: address
+            img: !img ? memberDetail.img : img,
+            about: !about ? memberDetail.about : about, 
+            role: !role ? memberDetail.role : role, 
+            link: !link ? memberDetail.link : link, 
+            address: !address ? memberDetail.address : address
         })
 
         await updateMember.save()
 
-        return res.status(200).json({ message: "Profile updated successfull"})
+        return res.status(200).json({ message: "Profile updated successfull", updateMember})
     }catch{
-
+        console.error('Error posting comment:', err);
+        return res.status(500).json({ message: 'Internal server error' });
     }
 })
 

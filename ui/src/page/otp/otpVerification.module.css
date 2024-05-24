@@ -8,6 +8,7 @@
     border-radius: 15px;
     width: 40%;
     margin: auto;
+    margin-top: 3em;
 }
 
 .form{
@@ -40,8 +41,9 @@
 
 .buttoncon{
     display: flex;
-    flex-direction: row;
     justify-content: space-between;
+    align-items:  center;
+    margin-top: 1.5em;
 }
 
 .resend{
@@ -50,8 +52,38 @@
       background-color: var(--color-black);
       color: var(--color-white);
       font-weight: bold;
-      border: none;
+      /* border: none; */
       border-radius: 5px;
-      width: 49%;
-      margin-top: 1.5em;
+      width: 10em;
+}
+
+
+@media screen and (max-width: 1000px){
+  .otpCon{
+    width: 75%;
+  }
+
+  .form{
+    width: 90%
+  }
+}
+
+@media screen and (max-width: 600px){
+  .otpCon{
+    width: 95%;
+  }
+
+  .resend{
+    width: 8em;
+    padding: 10px;
+    font-size: 16px;
+  }
+
+  .form{
+    width: 95%
+  }
+
+  .buttoncon{
+    justify-content: space-around;
+  }
 }

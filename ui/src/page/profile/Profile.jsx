@@ -8,6 +8,7 @@ import { IoIosLink } from "react-icons/io";
 import { ImCancelCircle } from "react-icons/im";
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import toast from "react-hot-toast";
+import { ImageUtility } from '../../utility/ImageUtility';
 import Avatar from '../../assest/noavatar.png';
 
 const Profile = ({ member }) => {
@@ -15,15 +16,27 @@ const Profile = ({ member }) => {
     const [ singleMember, setSingleMember ] = useState('')
     const [ profile, setProfile ] = useState({
       userId: member._id,
-      about: '',
-      role: '',
-      link: '',
-      address: ''
+      img: member.img || '',
+      about: member.about || '',
+      role: member.role || '',
+      link: member.link || '',
+      address: member.address || ''
     })
     const [ isLoading, setIsLoading ] = useState(true)
     const [ buttonFlip, setButtonFlip ] = useState(false)
     const navigate = useNavigate()
     const { username} = useParams()
+
+    const handleImageUpload = async(e) => {
+      const data = await ImageUtility(e.target.files[0])
+  
+      setProfile((prev) => {
+        return{
+          ...prev,
+          img: data
+        }
+      })
+    }
 
     const handleProfileChange = (e) => {
       const { name, value } = e.target
@@ -38,23 +51,26 @@ const Profile = ({ member }) => {
 
     const handleFormSubmit = async ( e ) => {
       e.preventDefault()
-
+      const updatedProfile = {
+        ...singleMember,
+        ...profile
+    };
       const fetchData = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/profile`, {
         method: "POST",
         credentials: "include",
         headers: {
           "content-type": "application/json"
         },
-        body: JSON.stringify(profile)
+        body: JSON.stringify(updatedProfile)
       })
 
       const resData = await fetchData.json()
 
       if(resData.message === "Profile updated successfull"){
+        setSingleMember(updatedProfile);
         toast(resData.message)
         setButtonFlip(false)
       }
-
     }
     
   useEffect(() => {
@@ -69,12 +85,21 @@ const Profile = ({ member }) => {
     const fetchMember = async () => {
       const res = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/member/${username}`);
       const resData = await res.json();
+      
       setSingleMember(resData);
-    };
-
+      setProfile({
+        userId: resData._id,
+        img: resData.img || '',
+        about: resData.about || '',
+        role: resData.role || '',
+        link: resData.link || '',
+        address: resData.address || ''
+      });
+      setIsLoading(false);
+    }
     fetchData();
     fetchMember();
-  }, [ username]);
+  }, [ username ]);
 
   const handleButtonFlip = () => {
     setButtonFlip(prev => !prev)
@@ -87,8 +112,7 @@ const Profile = ({ member }) => {
   return (
     <div className={style.profileHead}>
         <div >
-            <div className={style.avatar_con}>
-                <img src={ blogs.img ? blogs.img : ProfileImage  } alt='Img' className={style.avatar} height={100} width={100}/>
+            <div className={style.avatar_con}><img src={ singleMember.img ? singleMember.img : ProfileImage  } alt='Img' className={style.avatar} height={100} width={100}/>
                 { singleMember._id === member._id &&  <button className={style.editButton} onClick={handleButtonFlip}> Edit profile</button>}
             </div>
 
@@ -97,6 +121,11 @@ const Profile = ({ member }) => {
                 <p className={style.close} onClick={handleButtonFlip}> < ImCancelCircle /> </p>
                 <form onSubmit={handleFormSubmit}>
                     <input type={'text'} name='userId' value={profile.userId} readonly hidden/>
+
+                    <label htmlFor='avatar'>
+                      <img src={ profile.img ? profile.img : ProfileImage  } alt='Img' className={style.avatar} height={100} width={100}/>
+                      <input id='avatar' type={'file'} name='img' accept='image/*' onChange={handleImageUpload} hidden />
+                    </label>
                     <textarea type={'text'} placeholder='about me' name='about' value={profile.about} onChange={handleProfileChange} className={style.profileInput}/>
                     <input type={'text'} placeholder='role' name='role' value={profile.role} onChange={handleProfileChange}/>
                     <input type={'text'} placeholder='website link' name='link' value={profile.link} onChange={handleProfileChange}/>
@@ -108,7 +137,7 @@ const Profile = ({ member }) => {
             </div> }
 
             <h4>{ username }</h4>
-            <p className={style.about} >About Me</p>
+            <p className={style.about} >{singleMember.about}</p>
             <div className={style.aboutDetail}>
               <p> <LiaCriticalRole /> <span>{ singleMember.role ? singleMember.role : "" }</span></p>
               <p> <IoIosLink /> <span>{ singleMember.link ? singleMember.link : "" }</span></p>
@@ -124,7 +153,7 @@ const Profile = ({ member }) => {
         blogs.map((e) => (
           <div className={style.blogcon} key={e._id}>
             <div className={style.imgcon}>
-              <img src={e.img} alt="blogpage" height={200} width={200} />
+                <img src={e.img} alt="blogpage" height={200} width={200} />
             </div>
             <div className={style.blog}>
               <div className={style.usercon}>

@@ -48,6 +48,7 @@
 .body{
     color: var(--color-white);
     font-family: 'Times New Roman', Times, serif;
+    margin-bottom: 2em;
 }
 
 @media screen and (max-width: 1000px){
