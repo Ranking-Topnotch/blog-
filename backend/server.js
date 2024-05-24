@@ -18,7 +18,7 @@ const cookieparser = require('cookie-parser')
 const session = require('express-session');
 
 
-dotenv
+dotenv.config()
 connectToDb()
 const app = express()
 const PORT = process.env.PORT || 8001
