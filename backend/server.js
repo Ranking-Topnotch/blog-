@@ -38,7 +38,12 @@ app.use(
       secret: 'secret', // Change this to a secret string
       resave: false,
       saveUninitialized: false,
-      cookie: { secure: false }, // Set secure to true if using HTTPS
+      cookie: {
+          secure: process.env.NODE_ENV === 'production', // Only set secure to true if using HTTPS in production
+          httpOnly: true,
+          sameSite: 'lax'
+      }, // Set secure to true if using HTTPS
+        
     })
 );
 
@@ -48,11 +53,13 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: "https://blog-khaki-tau-50.vercel.app",
     methods: "GET,POST,PUT,DELETE",
     credentials: true,
     optionsSuccessStatus: 204
 }))
+
+app.options('*', cors());
 
 //setting up nodemailer
 let transporter = nodemailer.createTransport({
