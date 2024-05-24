@@ -162,13 +162,14 @@ link{
     .dropdown_con{
         position: absolute;
         width: 6em;
-        right: -55px;
+        right: -45px;
 
     }
     
     .login{
         color: red;
-        margin-right: -30px;width: 6.55em;
+        margin-right: -30px;
+        width: 6.55em;
         text-decoration: none;
 
     }
