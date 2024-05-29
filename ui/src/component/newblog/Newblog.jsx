@@ -16,7 +16,7 @@ const Newblog = ({ member }) => {
         img: '',
         body: ''
     })
-    console.log(newPost)
+
     const navigate = useNavigate()
 
     useEffect( () => {
@@ -60,7 +60,6 @@ const Newblog = ({ member }) => {
             })
 
             const res = await fetchData.json()
-            console.log(res.secure_url)
             return res.secure_url
         }catch(err){
             console.log(err)
@@ -82,6 +81,7 @@ const Newblog = ({ member }) => {
     const handlePostSubmit = async (e) => {
         e.preventDefault()
             const imgUrl = await uploadImage('image');
+            
             setNewPost((prev) => ({
                 ...prev,
                 image: imgUrl

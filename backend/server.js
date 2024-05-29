@@ -38,12 +38,7 @@ app.use(
       secret: 'secret', // Change this to a secret string
       resave: false,
       saveUninitialized: false,
-      cookie: {
-          secure: process.env.NODE_ENV === 'production', // Only set secure to true if using HTTPS in production
-          httpOnly: true,
-          sameSite: 'lax'
-      }, // Set secure to true if using HTTPS
-        
+      cookie: { secure: false }, // Set secure to true if using HTTPS
     })
 );
 
@@ -53,13 +48,11 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 app.use(cors({
-    origin: "https://blog-khaki-tau-50.vercel.app",
+    origin: "http://localhost:3000",
     methods: "GET,POST,PUT,DELETE",
-    credentials: true,
-    optionsSuccessStatus: 204
+    credentials: true
 }))
 
-app.options('*', cors());
 
 //setting up nodemailer
 let transporter = nodemailer.createTransport({
@@ -245,6 +238,7 @@ app.post('/resendOtp', async ( req, res ) => {
 
 app.post("/refreshtoken", (req, res, next) => {
     const refreshtoken = req.cookies.refreshToken;
+    console.log(refreshtoken)
     if(!refreshtoken){
         return res.status(404).json({ message: false});
     }
@@ -319,7 +313,7 @@ const verify = (req, res, next) => {
         next();
       });
     } else {
-      res.status(401).json("You are not authenticated!");
+      return res.status(401).json("You are not authenticated!");
     }
 };
 

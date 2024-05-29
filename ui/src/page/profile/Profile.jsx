@@ -109,6 +109,10 @@ const Profile = ({ member }) => {
     navigate(-1); 
   };
 
+  if(isLoading){
+    return <p>Loading...</p>
+  }
+
   return (
     <div className={style.profileHead}>
         <div >
@@ -147,14 +151,14 @@ const Profile = ({ member }) => {
         </div>
         
         <div className={style.blogcontain}>
-      {isLoading ? (
-        <p>Loading...</p>
+      {blogs.length <= 0 ? (
+        <p>No blog yet. Post some blogs.</p>
       ) : (
-        blogs.map((e) => (
+         blogs.map((e) => (
           <div className={style.blogcon} key={e._id}>
-            <div className={style.imgcon}>
-                <img src={e.img} alt="blogpage" height={200} width={200} />
-            </div>
+            { e.img && <div className={style.imgcon}>
+                <img src={e.img} alt="blogpage" height={200} width={200} /> 
+            </div> }
             <div className={style.blog}>
               <div className={style.usercon}>
                 <img className={style.user} src={Avatar} alt="blogpage" height={20} width={20} />

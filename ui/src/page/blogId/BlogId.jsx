@@ -11,7 +11,6 @@ import refreshToken from '../../component/refreshToken';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
 const  BlogId = ({ member }) => {
-  
   const [ blog, setBlog ] = useState(null);
   const [ comment, setComment ] = useState(null)
   const [ isLoading, setIsLoading ] = useState(true);
@@ -152,7 +151,7 @@ const  BlogId = ({ member }) => {
             <div className={style.imgcon}>
               
               <Link onClick={goBack} className={style.back}>< IoMdArrowRoundBack /> </Link>
-              <img src={blog.img} height={500} width={300} />
+              { blog.img && <img src={blog.img} height={500} width={300} /> }
             </div>
 
             <div className={style.blog_id}>
