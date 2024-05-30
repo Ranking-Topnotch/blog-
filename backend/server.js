@@ -41,7 +41,7 @@ app.use(
       cookie: {
           secure: process.env.NODE_ENV === 'production', // Only set secure to true if using HTTPS in production
           httpOnly: true,
-          sameSite: 'lax'
+          sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax'
       }, // Set secure to true if using HTTPS
         
     })
