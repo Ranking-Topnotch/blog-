@@ -161,7 +161,7 @@ const Profile = ({ member }) => {
             </div> }
             <div className={style.blog}>
               <div className={style.usercon}>
-                <img className={style.user} src={Avatar} alt="blogpage" height={20} width={20} />
+                <img className={style.user} src={singleMember.img ? singleMember.img : Avatar} alt="blogpage" height={20} width={20} />
                 <p className={style.username}>{e.username}</p>
               </div>
               <h1 className={style.head}>{e.title}</h1>

@@ -158,8 +158,8 @@ const  BlogId = ({ member }) => {
               <div>
                 <div className={style.usercon}>
                   <div>
-                    <img className={style.user} src={Avatar} alt='blodID' height={20} width={20} />
-                    <p className={style.username}>{blog.username}</p>
+                    <Link to={`/${blog.username}`}> <img className={style.user} src={blog.img ? blog.img : Avatar} alt='blodID' height={20} width={20} /> </Link>
+                    <Link to={`/${blog.username}`}> <p className={style.username}>{blog.username}</p> </Link>
                   </div>
                   
                   { member._id === blog.userId && <p> <MdDeleteOutline className={style.delete} onClick={() => deleteBlog(member._id,  blog._id)}/> </p>}

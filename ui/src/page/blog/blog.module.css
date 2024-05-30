@@ -8,6 +8,17 @@
     align-items: center;
 }
 
+.no_blog{
+    width: 70%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    margin-top: 3em;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
 .blogcon{
     width: 100%;
     display: flex;

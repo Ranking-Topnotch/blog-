@@ -107,6 +107,9 @@ const Blog = ({ member }) => {
     fetchData();
   }, []);
 
+  if(blogs.length === 0){
+    return <p className={style.no_blog}>No blog yet. Be the first to post.</p>
+  }
   
   return (
     <div className={style.blogcontain}>
