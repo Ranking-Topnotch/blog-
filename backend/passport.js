@@ -33,7 +33,7 @@ passport.use(new GoogleStrategy({
 
       const accessToken = jwt.sign({email: profile._json.email, username: profile.name.givenName, _id: newMember._id, img: newMember.img}, process.env.ACCESS_TOKEN_KEY, { expiresIn: "1m"} )
       const refreshToken = jwt.sign({email: profile._json.email, username: profile.name.givenName, _id: newMember._id, img: newMember.img}, process.env.REFRESH_TOKEN_KEY, { expiresIn: "10m"} )
-        
+      console.log(accessToken, refreshToken)
       return cb(null, newMember, { accessToken, refreshToken });
     }catch(err){
       return cb(err);
@@ -41,10 +41,10 @@ passport.use(new GoogleStrategy({
   }
 ));
 
-passport.serializeUser((user,done)=>{
-    done(null,user)
+passport.serializeUser((user, done)=>{
+    done(null, user)
 })
 
-passport.deserializeUser((user,done)=>{
-    done(null,user)
+passport.deserializeUser((user, done)=>{
+    done(null, user)
 })

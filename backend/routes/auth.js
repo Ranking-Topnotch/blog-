@@ -44,7 +44,7 @@ router.get('/google/callback', (req, res, next) => {
       if (!user) {
         return res.redirect('/login/failed');
       }
-  
+      
       // Set the cookies with the tokens from the info object
       res.cookie('accessToken', info.accessToken, { expires: new Date(Date.now() + (1 * 60 * 1000)) });
       res.cookie('refreshToken', info.refreshToken, { httpOnly: true, secure: true, sameSite: 'strict', expires: new Date(Date.now() + (10 * 60 * 1000)) });

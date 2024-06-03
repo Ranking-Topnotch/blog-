@@ -166,7 +166,7 @@ const  BlogId = ({ member }) => {
                 </div>
 
                 <h1 className={style.head}>{blog.title}</h1>
-                <p className={style.date}>2024 May 10</p>
+                <p className={style.date}>{blog.createdAt.split("T")[0] + " " + blog.createdAt.split("T")[1].split(".")[0]}</p>
 
                 <p className={style.body}>{blog.body}</p>
               </div>
