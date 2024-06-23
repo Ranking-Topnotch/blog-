@@ -44,6 +44,7 @@ const App = () => {
           throw new Error('Authentication failed!');
         })
         .then((resObject) => {
+          console.log(resObject.user)//added
           setMember(resObject.user);
         })
         .catch((err) => {

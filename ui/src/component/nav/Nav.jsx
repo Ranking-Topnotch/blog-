@@ -4,6 +4,7 @@ import { FaUserNurse } from "react-icons/fa6";
 import { AiOutlineAlignLeft } from 'react-icons/ai'
 import { FaTimes } from 'react-icons/fa'
 import { Link } from 'react-router-dom';
+import Logo from '../../assest/favicon.jpg'
 
 const links = [
     {
@@ -56,7 +57,7 @@ const Nav = ({ member }) => {
 
   return (
     <div className={style.container}>
-        <h3 className={style.logo}>Logo</h3>
+        <img src={Logo} alt='logo' height={50} width={50}/>
 
         <div>
         <nav ref={navRef} className={nav ? style.navbar_con_o : style.navbar_con_c}>

@@ -83,15 +83,32 @@
 
 .interact{
     margin-top: 2em;
+    display: flex;
+    align-items: top;
+}
+
+.interact > div{
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+}
+
+.interact div p{
+    color: var(--color-white);
 }
 
 .like,
+.dislike,
 .comment,
 .repost{
     margin-right: 1em;
     color: var(--color-white);
     font-size: 24px;
     cursor: pointer;
+}
+
+.like{
+    color: red;
 }
 
 .commentInput{

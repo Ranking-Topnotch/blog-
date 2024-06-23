@@ -136,11 +136,9 @@ app.post('/register', async (req, res) => {
         console.log(err)
         return res.status(401).json({message: 'Error in Login'})
     }
-
 })
 
 const sendOtpVerification = async ({ _id, email }) => {
-
     try{
         const otp = `${Math.floor(1000 + Math.random() * 9999 )}`
     
@@ -243,7 +241,6 @@ app.post('/resendOtp', async ( req, res ) => {
 
 app.post("/refreshtoken", (req, res, next) => {
     const refreshtoken = req.cookies.refreshToken;
-    console.log(refreshtoken)
     if(!refreshtoken){
         return res.status(404).json({ message: false});
     }
@@ -386,8 +383,14 @@ app.post('/newblog', async ( req, res ) => {
 app.get('/getblogs', async ( req, res ) => {
     try{
         await connectToDb() 
-        const blogs = await Blog.find()
         
+        const timeStamped = new Date(Date.now() - 10 * 60 * 1000)
+        
+        const topBlog = await Blog.find({ createdAt: { $gte: timeStamped }})
+        const randomBlog = await Blog.aggregate([{ $match: { createdAt: { $lt: timeStamped }}}, { $sample: { size: await Blog.countDocuments({ createdAt: { $lt: timeStamped } })}}])
+        
+        const blogs = [ ...topBlog, ...randomBlog]
+   
         return res.status(200).json(blogs)
     }catch(err){
         console.error('Error during login:', err);
@@ -397,6 +400,7 @@ app.get('/getblogs', async ( req, res ) => {
 
 app.get('/blog/:id', async ( req, res ) => {
     const { id }  = req.params
+    
     try{
         await connectToDb()
         
@@ -409,7 +413,37 @@ app.get('/blog/:id', async ( req, res ) => {
     }
 })
 
-app.post('/deleteblog', verify, async ( req, res ) => {
+app.post('/likes', async( req, res ) => {
+    const { userId, id } = req.body
+    
+    try{
+        await connectToDb()
+        const checkedLike = await Blog.findById({_id: id})
+
+        let message = '';
+        if(checkedLike.likes.includes(userId)){
+            await Blog.findByIdAndUpdate(id, {
+                $pull:{likes: userId}
+            })
+            
+            message = 'Blog Disliked';
+        }else{
+            await Blog.findByIdAndUpdate(id, {
+                $addToSet:{likes: userId}
+            })
+
+            message = 'Blog Liked';
+        }
+
+        const updatedBlog = await Blog.findById({ _id: id });
+
+        return res.status(200).json({ message, likes: updatedBlog.likes });
+    }catch(err){
+        return res.status(500).json({ message: " An error occur"})
+    }
+})
+
+app.post('/deleteblog', async ( req, res ) => {
     const { memberId, blogId } = req.body
     try{
         await connectToDb()

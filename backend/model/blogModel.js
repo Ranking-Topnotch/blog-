@@ -25,14 +25,18 @@ const blogSchema = new Schema({
         type: String,
         required: true
     },
+    comments: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Comment'
+    }],
+    likes: {
+        type: [String],
+        default: []
+    },
     createdAt: {
         type: Date,
         default: Date.now
     },
-    comments: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Comment'
-    }]
 });
 
 module.exports  = mongoose.models?.Blog || model('Blog', blogSchema )

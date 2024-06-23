@@ -4,6 +4,7 @@
     margin-top: 1em;
     flex-wrap: wrap;
     max-width: 100%;
+    align-items: center;
 }
 
 .logo{

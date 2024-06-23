@@ -47,8 +47,8 @@ router.get('/google/callback', (req, res, next) => {
       
       // Set the cookies with the tokens from the info object
       res.cookie('accessToken', info.accessToken, { expires: new Date(Date.now() + (1 * 60 * 1000)) });
-      res.cookie('refreshToken', info.refreshToken, { httpOnly: true, secure: true, sameSite: 'strict', expires: new Date(Date.now() + (10 * 60 * 1000)) });
-  
+     // res.cookie('refreshToken', info.refreshToken, { httpOnly: true, secure: true, sameSite: 'strict', expires: new Date(Date.now() + (10 * 60 * 1000)) });
+      res.cookie('refreshToken', info.refreshToken, { expires: new Date(Date.now() + (10 * 60 * 1000)), httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict' });//added
       req.logIn(user, (err) => {
         if (err) {
           return next(err);

@@ -49,6 +49,7 @@
 
 .date{
     color: var(--color-white);
+    margin-block: 5px;
 }
 
 .head{

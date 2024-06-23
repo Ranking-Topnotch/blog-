@@ -128,7 +128,7 @@ const Blog = ({ member }) => {
               </div>
               <h1 className={style.head}>{e.title}</h1>
               <p className={style.date}>{e.createdAt.split("T")[0] + " " + e.createdAt.split("T")[1].split(".")[0]}</p>
-              <p className={style.body}>{e.body}</p>
+              <p className={style.body}>{e.body.split(" ").slice(0, 20).join(" ") + " " + '...'}</p>
               <Link to={`/blog/${e._id}`} className={style.link}>Read more</Link>
             </div>
           </div>

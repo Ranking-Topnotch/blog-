@@ -3,6 +3,7 @@ import { GiCoinsPile, GiSelfLove } from "react-icons/gi";
 import { BiRepost, BiComment } from "react-icons/bi";
 import { MdDeleteOutline } from "react-icons/md"
 import { IoMdArrowRoundBack } from "react-icons/io";
+import { GiLoveMystery } from "react-icons/gi";
 import toast from "react-hot-toast";
 import React, { useState, useEffect } from 'react'
 import Comment from '../../component/comment/Comment';
@@ -21,10 +22,12 @@ const  BlogId = ({ member }) => {
     username: '',
     content: ''
   });
+  const [ like, setLike ] = useState(null)
   
   const { id } = useParams();
   const navigate = useNavigate()
-
+  
+  
   // fetching the blog by id that come's from params
 
   const fetchData = async () => {
@@ -96,6 +99,27 @@ const  BlogId = ({ member }) => {
     } 
   };
 
+  const likePost = async () => {
+    const fetchData = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/likes`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json"
+      },
+      body: JSON.stringify({ userId: member._id, id })
+    });
+
+    const resData = await fetchData.json()
+
+    console.log(resData) 
+    if(resData.message === "Blog Liked"){
+      toast(<p className={style.alert}>{resData.message}</p>)
+      setBlog(prevBlog => ({...prevBlog, likes: resData.likes }))
+    }else if(resData.message === "Blog Disliked"){
+      toast(<p className={style.alert}>{resData.message}</p>) 
+      setBlog(prevBlog => ({...prevBlog, likes: resData.likes }))
+    }
+  }
+
   const deleteBlog = async (memberId, blogId) => {
     await refreshToken()
     const accessToken = `; ${document.cookie}`.split(`; accessToken=`).pop().split(';').shift();
@@ -140,6 +164,8 @@ const  BlogId = ({ member }) => {
   } 
 }
 
+console.log(blog)
+
   return (
     <div className={style.blogId}>
       {isLoading ? (
@@ -172,9 +198,9 @@ const  BlogId = ({ member }) => {
               </div>
 
               <div className={style.interact}>
-                <GiSelfLove className={style.like}/>
-                <BiComment onClick={flipComment} className={style.comment}/>
-                <BiRepost className={style.repost}/>
+                <div>{ blog.likes.includes(member._id) ? <GiLoveMystery onClick={likePost} className={style.like}/> : <GiSelfLove onClick={likePost} className={style.dislike}/>}<p>{blog.likes.length <= 0 ? '' : blog.likes.length}</p></div>
+                <div><BiComment onClick={flipComment} className={style.comment}/><p>{ comment.length <= 0 ? '' : comment.length}</p></div>
+                <div><BiRepost className={style.repost}/> <p></p></div>
               </div>
             </div>
 
