@@ -109,8 +109,7 @@ const  BlogId = ({ member }) => {
     });
 
     const resData = await fetchData.json()
-
-    console.log(resData) 
+     
     if(resData.message === "Blog Liked"){
       toast(<p className={style.alert}>{resData.message}</p>)
       setBlog(prevBlog => ({...prevBlog, likes: resData.likes }))
@@ -164,8 +163,6 @@ const  BlogId = ({ member }) => {
   } 
 }
 
-console.log(blog)
-
   return (
     <div className={style.blogId}>
       {isLoading ? (
@@ -216,7 +213,7 @@ console.log(blog)
               <button className={style.button}>Comment</button>
             </form>}
             
-            <Comment comment={comment} deleteComment={deleteComment} /> 
+            <Comment comment={comment} deleteComment={deleteComment} member={member}/> 
           </div>
         </div>
       )}

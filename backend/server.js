@@ -310,7 +310,6 @@ const verify = (req, res, next) => {
         if (err) {
           return res.status(403).json("Token is not valid!");
         }
-  
         req.member = memberData;
         next();
       });
@@ -326,9 +325,8 @@ app.get('/usersession', ( req, res ) => {
     }
     jwt.verify(refreshtoken, process.env.REFRESH_TOKEN_KEY, (err, memberData) => {
         if(err){
-            return res.status(403).json({ message: false });
+            return res.status(403).json({ message: false, sessionActive: false });
         } 
-
         return res.status(401).json({ sessionActive: true, member: memberData });
     });  
 })
@@ -483,7 +481,7 @@ app.post('/comment', async (req, res) => {
     }
 });
 
-app.post('/deleteComment', async ( req, res ) => {
+app.post('/deleteComment', verify, async ( req, res ) => {
     const { _id } = req.body
     const deletecomment = await Comment.deleteOne({ _id })
     

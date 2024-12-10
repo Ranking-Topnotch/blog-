@@ -60,35 +60,35 @@ const Nav = ({ member }) => {
         <img src={Logo} alt='logo' height={50} width={50}/>
 
         <div>
-        <nav ref={navRef} className={nav ? style.navbar_con_o : style.navbar_con_c}>
-            <div className={style.navigation}>
-                <AiOutlineAlignLeft onClick={navFlip} className={nav ? style.navbar : style.open}/>
-                <FaTimes onClick={navFlip} className={nav ? style.closed : style.navbar}/> 
-            </div>
-            <ul className={nav ? style.navbar_open : style.navbar_closed}>
-
-                { links.map(link => {
-                    return <Link to={link.path} key={link.path} className={style.link}>{link.name}</Link>
-                })}
-
-                <div ref={dropdownRef} className={style.logincon}>
-                    <div onClick={handleMouse} className={style.link}>
-                        <FaUserNurse />
-                    </div> 
-
-                    { onMouse && (
-                        <div className={style.dropdown}>
-                            <div className={style.dropdown_con}>
-                                { member === false && <Link to={'/login'}><div onClick={handleMouse} className={style.login}>Login</div></Link>}
-                                { member && <Link to={`/${member.username}`}><div onClick={handleMouse} className={style.login}>Profile</div></Link>}
-                                { member && <Link to={'/newblog'}><div onClick={handleMouse} className={style.login}>New blog</div></Link>}
-                                { member && <div onClick={logout} className={style.login}>Logout</div>}
-                            </div> 
-                        </div>
-                    )}
+            <nav ref={navRef} className={nav ? style.navbar_con_o : style.navbar_con_c}>
+                <div className={style.navigation}>
+                    <AiOutlineAlignLeft onClick={navFlip} className={nav ? style.navbar : style.open}/>
+                    <FaTimes onClick={navFlip} className={nav ? style.closed : style.navbar}/> 
                 </div>
-            </ul>
-        </nav>
+                <ul className={nav ? style.navbar_open : style.navbar_closed}>
+
+                    { links.map(link => {
+                        return <Link to={link.path} key={link.path} className={style.link}>{link.name}</Link>
+                    })}
+
+                    <div ref={dropdownRef} className={style.logincon}>
+                        <div onClick={handleMouse} className={style.link}>
+                            <FaUserNurse />
+                        </div> 
+
+                        { onMouse && (
+                            <div className={style.dropdown}>
+                                <div className={style.dropdown_con}>
+                                    { member === false && <Link to={'/login'}><div onClick={handleMouse} className={style.login}>Login</div></Link>}
+                                    { member && <Link to={`/${member.username}`}><div onClick={handleMouse} className={style.login}>Profile</div></Link>}
+                                    { member && <Link to={'/newblog'}><div onClick={handleMouse} className={style.login}>New blog</div></Link>}
+                                    { member && <div onClick={logout} className={style.login}>Logout</div>}
+                                </div> 
+                            </div>
+                        )}
+                    </div>
+                </ul>
+            </nav>
         </div>
     </div>
   )

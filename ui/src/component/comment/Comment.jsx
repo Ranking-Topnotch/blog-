@@ -3,8 +3,8 @@ import style from './comment.module.css'
 import Avatar from '../../assest/noavatar.png'
 import { MdDeleteOutline } from "react-icons/md"
 
-const Comment = ({ comment, deleteComment }) => {
-
+const Comment = ({ comment, deleteComment, member }) => {
+console.log(member)
   return (
     <div className={style.comment_con}>
       {comment.length === 0 ? (
