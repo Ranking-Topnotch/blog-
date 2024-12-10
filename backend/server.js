@@ -25,21 +25,15 @@ const PORT = process.env.PORT || 8001
 
 
 
-app.use(express.json({limit: '10mb'}))
-
-// app.use(cookieSession({
-//     name: "session",
-//     keys: ["rank"],
-//     maxAge: 24 * 60 * 60 * 100
-// }))
-
 app.use(
     session({
       secret: 'secret', // Change this to a secret string
       resave: false,
       saveUninitialized: false,
       cookie: {
-          secure: false
+          secure: process.env.NODE_ENV === 'production', // Only set secure to true if using HTTPS in production
+          httpOnly: true,
+          sameSite: 'lax'
       }, // Set secure to true if using HTTPS
         
     })
@@ -51,11 +45,15 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: "https://blog-khaki-tau-50.vercel.app",
     methods: "GET,POST,PUT,DELETE",
     credentials: true,
     optionsSuccessStatus: 204
 }))
+
+app.options('*', cors());
+
+app.use(express.json({limit: '10mb'}))
 
 
 
