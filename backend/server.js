@@ -25,19 +25,32 @@ const PORT = process.env.PORT || 8001
 
 
 
+// app.use(
+//     session({
+//       secret: 'secret', // Change this to a secret string
+//       resave: false,
+//       saveUninitialized: false,
+//       cookie: {
+//           secure: process.env.NODE_ENV === 'production', // Only set secure to true if using HTTPS in production
+//           httpOnly: true,
+//           sameSite: 'lax'
+//       }, // Set secure to true if using HTTPS
+        
+//     })
+// );
+
 app.use(
     session({
       secret: 'secret', // Change this to a secret string
       resave: false,
       saveUninitialized: false,
       cookie: {
-          secure: process.env.NODE_ENV === 'production', // Only set secure to true if using HTTPS in production
-          httpOnly: true,
-          sameSite: 'lax'
+          secure: false
       }, // Set secure to true if using HTTPS
         
     })
 );
+
 
 app.use(cookieparser())
 
