@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from "react"
 import { useParams, Link, useNavigate } from "react-router-dom"
 import Button from "../../component/button/Button"
 import TextArea from "../../component/textArea/TextArea"
-import { mockBlogs, formatDate } from "../../utility/mockData"
+import { formatDate } from "../../utility/mockData"
 import { MdOutlineDeleteSweep } from "react-icons/md";
 import { AiOutlineLike } from "react-icons/ai";
 import { TfiCommentAlt } from "react-icons/tfi";
