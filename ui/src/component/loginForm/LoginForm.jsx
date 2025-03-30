@@ -49,7 +49,6 @@ const LoginForm = () => {
       e.preventDefault()
 
       const fetchData = await login(formData.email, formData.password);
-      console.log(fetchData)
       
       
       toast(fetchData.message)

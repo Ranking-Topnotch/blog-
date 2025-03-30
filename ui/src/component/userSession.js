@@ -18,7 +18,6 @@ const userSession = async () => {
         });
 
         const resData = await response.json()
-        console.log(resData)
         if (resData.sessionActive) {
             return { sessionActive: resData.sessionActive, member: resData.member };
         }else{

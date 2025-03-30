@@ -17,7 +17,6 @@ const ProtectedRoute = () => {
                 if (sessionActive) {
                     setIsAuthenticated(true);
                     setMember(member);
-                    console.log(member)
                 } else {
                     setIsAuthenticated(false);
                     setMember(null);
@@ -44,7 +43,7 @@ const ProtectedRoute = () => {
 
     if (isLoading) return <p>Loading...</p>; 
 
-    return member ? <Outlet /> : <Navigate to="/login" />;
+    return isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
 };
 
 export default ProtectedRoute;

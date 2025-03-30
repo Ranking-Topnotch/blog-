@@ -11,7 +11,6 @@ const Blog = () => {
     const fetchData = async () => {
       const res = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/member/blog/getblogs`);
       const resData = await res.json();
-      console.log(resData)
       setBlogs(resData);
       setIsLoading(false);
     };

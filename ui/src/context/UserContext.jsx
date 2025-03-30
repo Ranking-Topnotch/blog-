@@ -44,7 +44,6 @@ export const UserProvider = ({ children }) => {
 
         const data = await response.json();
         
-        console.log(data)
         if (!response.ok) {
             toast(data.message)
         }
@@ -59,7 +58,6 @@ export const UserProvider = ({ children }) => {
             method: "GET",
             credentials: "include", // Ensure cookie is cleared
         });
-        console.log('response', response)
 
         const res = await response.json()
         if(res.message === 'User successfully logged out'){

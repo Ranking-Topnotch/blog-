@@ -234,7 +234,8 @@ module.exports = {
             
             res.cookie('accessToken', accessToken, { expires: new Date(Date.now() + (1 * 60 * 1000)) });
             res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'None', secure: true, expires: new Date(Date.now() + (10 * 60 * 1000)) });
-         
+            // locally -  res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'None', secure: true, expires: new Date(Date.now() + (10 * 60 * 1000)) });
+             
             return res.status(200).json({
                 member: checkedMember,
                 message: 'Login successfull',
