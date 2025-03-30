@@ -25,11 +25,9 @@ app.use(
       resave: false,
       saveUninitialized: false,
       cookie: {
-          secure: process.env.NODE_ENV === 'production', // Only set secure to true if using HTTPS in production
-          httpOnly: true,
-          sameSite: 'lax'
-          //secure: false
-      }, // Set secure to true if using HTTPS  
+          secure: false
+      }, // Set secure to true if using HTTPS
+        
     })
 );
 
@@ -39,7 +37,7 @@ app.use(passport.initialize())
 app.use(passport.session())
 //https://blog-khaki-tau-50.vercel.app
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: "https://blog-khaki-tau-50.vercel.app",
     methods: "GET,POST,PUT,DELETE",
     credentials: true,
     optionsSuccessStatus: 204
