@@ -1,60 +1,88 @@
-import React, { useEffect, useState } from 'react'
-import style from './profile.module.css'
-import ProfileImage from '../../assest/noavatar.png'
-import { CiCalendarDate } from "react-icons/ci";
-import { FaLocationDot } from "react-icons/fa6";
-import { LiaCriticalRole } from "react-icons/lia";
-import { IoIosLink } from "react-icons/io";
-import { ImCancelCircle } from "react-icons/im";
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useState, useEffect, useContext } from "react"
+import { Link, useParams } from "react-router-dom"
+import Button from "../../component/button/Button"
+import Input from "../../component/input/Input"
+import TextArea from "../../component/textArea/TextArea"
+import Modal from "../../component/modal/Modal"
+import BlogCard from "../../component/blogCard/BlogCard"
+import { mockUser, mockBlogs } from "../../utility/mockData"
 import toast from "react-hot-toast";
-import { ImageUtility } from '../../utility/ImageUtility';
-import Avatar from '../../assest/noavatar.png';
+import styles from "./profile.module.css"
+import { UserContext } from "../../context/UserContext"
 
-const Profile = ({ member }) => {
-    const [ blogs, setBlogs ] = useState('')
-    const [ singleMember, setSingleMember ] = useState('')
-    const [ profile, setProfile ] = useState({
-      userId: member._id,
-      img: member.img || '',
-      about: member.about || '',
-      role: member.role || '',
-      link: member.link || '',
-      address: member.address || ''
-    })
-    const [ isLoading, setIsLoading ] = useState(true)
-    const [ buttonFlip, setButtonFlip ] = useState(false)
-    const navigate = useNavigate()
-    const { username} = useParams()
+const Profile = () => {
+  const { username} = useParams()
+  const { member } = useContext(UserContext)
+  const [user, setUser] = useState('')
+  const [userBlogs, setUserBlogs] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState("posts")
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [formData, setFormData] = useState({
+    userId: member._id,
+    img: member.img || '',
+    about: member.about || '',
+    role: member.role || '',
+    link: member.link || '',
+    address: member.address || ''
+  })
 
-    const handleImageUpload = async(e) => {
-      const data = await ImageUtility(e.target.files[0])
-  
-      setProfile((prev) => {
-        return{
-          ...prev,
-          img: data
-        }
-      })
-    }
 
-    const handleProfileChange = (e) => {
-      const { name, value } = e.target
-
-      setProfile(prev => {
-       return {
-        ...prev,
-        [ name ] :  value
-       }
-      })
-    }
-
-    const handleFormSubmit = async ( e ) => {
-      e.preventDefault()
-      const updatedProfile = {
-        ...singleMember,
-        ...profile
+  useEffect(() => {
+     const fetchData = async () => {
+      const res = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/member/blog/getblogs`);
+      const resData = await res.json();
+      const filterBlog = resData.filter( e => e.username === username)
+      setUserBlogs(filterBlog);
+      setLoading(false);
     };
+
+    const fetchMember = async () => {
+      const res = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/member/${username}`);
+      const resData = await res.json();
+      
+      setUser(resData);
+      setFormData({
+        userId: resData._id,
+        img: resData.img || '',
+        about: resData.about || '',
+        role: resData.role || '',
+        link: resData.link || '',
+        address: resData.address || ''
+      });
+      setLoading(false);
+    }
+    fetchData();
+    fetchMember();
+  }, [ username ])
+
+  useEffect(() => {
+    // Update form data when user data changes
+    if (user) {
+      setFormData({
+        userId: member._id,  
+        img: user.img || "",
+        about: user.about || "",
+        role: user.role || "",
+        link: user.link || "",
+        address: user.address || "",
+      })
+    }
+  }, [user])
+
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    const updatedProfile = {
+        ...user,
+        ...formData
+    };
+    console.log(updatedProfile)
       const fetchData = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/profile`, {
         method: "POST",
         credentials: "include",
@@ -67,115 +95,207 @@ const Profile = ({ member }) => {
       const resData = await fetchData.json()
 
       if(resData.message === "Profile updated successfull"){
-        setSingleMember(updatedProfile);
+        setUser(updatedProfile);
         toast(resData.message)
-        setButtonFlip(false)
+        setIsEditModalOpen(false)
       }
-    }
+
+    // Update local user state
+    setUser((prev) => ({ ...prev, ...formData }))
+
+    // Close modal
     
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/getblogs`);
-      const resData = await res.json();
-      const filterBlog = resData.filter( e => e.username === username)
-      setBlogs(filterBlog);
-      setIsLoading(false);
-    };
-
-    const fetchMember = async () => {
-      const res = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/member/${username}`);
-      const resData = await res.json();
-      
-      setSingleMember(resData);
-      setProfile({
-        userId: resData._id,
-        img: resData.img || '',
-        about: resData.about || '',
-        role: resData.role || '',
-        link: resData.link || '',
-        address: resData.address || ''
-      });
-      setIsLoading(false);
-    }
-    fetchData();
-    fetchMember();
-  }, [ username ]);
-
-  const handleButtonFlip = () => {
-    setButtonFlip(prev => !prev)
   }
 
-  const goBack = () => {
-    navigate(-1); 
-  };
-
-  if(isLoading){
-    return <p>Loading...</p>
+  if (loading) {
+    return (
+      <div className="container">
+        <div className={styles.loading}>Loading profile...</div>
+      </div>
+    )
   }
 
   return (
-    <div className={style.profileHead}>
-        <div >
-            <div className={style.avatar_con}><img src={ singleMember.img ? singleMember.img : ProfileImage  } alt='Img' className={style.avatar} height={100} width={100}/>
-                { singleMember._id === member._id &&  <button className={style.editButton} onClick={handleButtonFlip}> Edit profile</button>}
+    <div className={styles.profilePage}>
+      <div className="container">
+        <div className={styles.profileHeader}>
+          <div className={styles.profileCover}></div>
+          <div className={styles.profileInfo}>
+            <div className={styles.profileAvatar}>
+              <img src={user.img || "/placeholder.svg"} alt={user.username} />
             </div>
-
-            { buttonFlip && <div className={style.button_con}>
-              <section>
-                <p className={style.close} onClick={handleButtonFlip}> < ImCancelCircle /> </p>
-                <form onSubmit={handleFormSubmit}>
-                    <input type={'text'} name='userId' value={profile.userId} readonly hidden/>
-
-                    <label htmlFor='avatar'>
-                      <img src={ profile.img ? profile.img : ProfileImage  } alt='Img' className={style.avatar} height={100} width={100}/>
-                      <input id='avatar' type={'file'} name='img' accept='image/*' onChange={handleImageUpload} hidden />
-                    </label>
-                    <textarea type={'text'} placeholder='about me' name='about' value={profile.about} onChange={handleProfileChange} className={style.profileInput}/>
-                    <input type={'text'} placeholder='role' name='role' value={profile.role} onChange={handleProfileChange}/>
-                    <input type={'text'} placeholder='website link' name='link' value={profile.link} onChange={handleProfileChange}/>
-                    <input type={'text'} placeholder='address' name='address' value={profile.address} onChange={handleProfileChange}/>
-
-                    <button>Submit</button>
-                </form>
-              </section> 
-            </div> }
-
-            <h4>{ username }</h4>
-            <p className={style.about} >{singleMember.about}</p>
-            <div className={style.aboutDetail}>
-              <p> <LiaCriticalRole /> <span>{ singleMember.role ? singleMember.role : "" }</span></p>
-              <p> <IoIosLink /> <span>{ singleMember.link ? singleMember.link : "" }</span></p>
-              <p>< CiCalendarDate /> <span>Joined by </span></p>
-              <p>< FaLocationDot /> <span>{ singleMember.address ? singleMember.address : "" }</span></p>
+            <div className={styles.profileDetails}>
+              <h1 className={styles.profileName}>{user.username}</h1>
+              <p className={styles.profileRole}>{user.role}</p>
             </div>
-        </div>
-        
-        <div className={style.blogcontain}>
-      {blogs.length <= 0 ? (
-        <p>No blog yet. Post some blogs.</p>
-      ) : (
-         blogs.map((e) => (
-          <div className={style.blogcon} key={e._id}>
-            { e.img && <div className={style.imgcon}>
-                <img src={e.img} alt="blogpage" height={200} width={200} /> 
-            </div> }
-            <div className={style.blog}>
-              <div className={style.usercon}>
-                <img className={style.user} src={singleMember.img ? singleMember.img : Avatar} alt="blogpage" height={20} width={20} />
-                <p className={style.username}>{e.username}</p>
-              </div>
-              <h1 className={style.head}>{e.title}</h1>
-              <p className={style.date}>{e.createdAt}</p>
-              <p className={style.body}>{e.body}</p>
-              <Link to={`/blog/${e._id}`} className={style.link}>Read more</Link>
+            <div className={styles.profileActions}>
+              <Button onClick={() => setIsEditModalOpen(true)}>
+                <i className="fas fa-edit"></i>
+                Edit Profile
+              </Button>
             </div>
           </div>
-        ))
-      )}
-    </div>
-    
+        </div>
+
+        <div className={styles.profileContent}>
+          <div className={styles.profileSidebar}>
+            <div className={styles.profileCard}>
+              <h2 className={styles.cardTitle}>About</h2>
+              <p className={styles.aboutText}>{user.about}</p>
+
+              <div className={styles.profileMeta}>
+                {user.address && (
+                  <div className={styles.metaItem}>
+                    <i className="fas fa-map-marker-alt"></i>
+                    <span>{user.address}</span>
+                  </div>
+                )}
+
+                {user.link && (
+                  <div className={styles.metaItem}>
+                    <i className="fas fa-link"></i>
+                    <a href={user.link} target="_blank" rel="noopener noreferrer">
+                      {user.link.replace(/^https?:\/\//, "")}
+                    </a>
+                  </div>
+                )}
+
+                <div className={styles.metaItem}>
+                  <i className="fas fa-calendar-alt"></i>
+                  <span>Joined January 2023</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.profileMain}>
+            <div className={styles.tabs}>
+              <button
+                className={`${styles.tabButton} ${activeTab === "posts" ? styles.active : ""}`}
+                onClick={() => setActiveTab("posts")}
+              >
+                Posts
+              </button>
+              <button
+                className={`${styles.tabButton} ${activeTab === "likes" ? styles.active : ""}`}
+                onClick={() => setActiveTab("likes")}
+              >
+                Likes
+              </button>
+              <button
+                className={`${styles.tabButton} ${activeTab === "comments" ? styles.active : ""}`}
+                onClick={() => setActiveTab("comments")}
+              >
+                Comments
+              </button>
+            </div>
+
+            <div className={styles.tabContent}>
+              {activeTab === "posts" && (
+                <>
+                  <div className={styles.tabHeader}>
+                    <h2 className={styles.tabTitle}>Your Blog Posts</h2>
+                    <Link to="/post-blog">
+                      <Button>
+                        <i className="fas fa-plus"></i>
+                        Create New Post
+                      </Button>
+                    </Link>
+                  </div>
+
+                  {userBlogs.length > 0 ? (
+                    <div className={styles.blogGrid}>
+                      {userBlogs.map((blog) => (
+                        <BlogCard key={blog._id} blog={blog} />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className={styles.emptyState}>
+                      <p>You haven't created any blog posts yet.</p>
+                      <Link to="/post-blog">
+                        <Button>Create Your First Post</Button>
+                      </Link>
+                    </div>
+                  )}
+                </>
+              )}
+
+              {activeTab === "likes" && (
+                <div className={styles.emptyState}>
+                  <p>Posts you've liked will appear here.</p>
+                </div>
+              )}
+
+              {activeTab === "comments" && (
+                <div className={styles.emptyState}>
+                  <p>Your comments on posts will appear here.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Edit Profile Modal */}
+      <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} title="Edit Profile">
+        <form onSubmit={handleSubmit} className={styles.editForm}>
+          <Input
+            label="Profile Image URL"
+            id="img"
+            name="img"
+            value={formData.img}
+            onChange={handleChange}
+            placeholder="https://example.com/image.jpg"
+          />
+
+          <TextArea
+            label="About"
+            id="about"
+            name="about"
+            value={formData.about}
+            onChange={handleChange}
+            placeholder="Tell us about yourself"
+            rows={4}
+          />
+
+          <Input
+            label="Role"
+            id="role"
+            name="role"
+            value={formData.role}
+            onChange={handleChange}
+            placeholder="e.g. Senior Developer"
+          />
+
+          <Input
+            label="Website"
+            id="link"
+            name="link"
+            value={formData.link}
+            onChange={handleChange}
+            placeholder="https://yourwebsite.com"
+          />
+
+          <Input
+            label="Location"
+            id="address"
+            name="address"
+            value={formData.address}
+            onChange={handleChange}
+            placeholder="e.g. San Francisco, CA"
+          />
+
+          <div className={styles.modalActions}>
+            <Button type="button" variant="outline" onClick={() => setIsEditModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button type="submit">Save Changes</Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   )
 }
 
 export default Profile
+

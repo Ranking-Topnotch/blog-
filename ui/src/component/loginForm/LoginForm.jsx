@@ -1,80 +1,134 @@
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import styles from "./loginForm.module.css";
-import { useState } from "react";
+import { useContext, useState } from "react"
+import { Link, useNavigate, useLocation } from "react-router-dom"
+import Button from "../../component/button/Button"
+import Input from "../../component/input/Input"
+import styles from "./loginForm.module.css"
 import toast from "react-hot-toast";
+import { UserContext } from "../../context/UserContext"
 
-
-const LoginForm = ({ passedMember }) => {
-  const location = useLocation()
-  const [ loginData, setLoginData ] = useState({
-    email: '',
-    password: ''
-  })
-
+const LoginForm = () => {
   const navigate = useNavigate()
-
-  const handleLoginChange = (e) => {
+  const location = useLocation()
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  })
+  const { login } = useContext(UserContext);
+  const [errors, setErrors] = useState({})
+  const handleChange = (e) => {
     const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
 
-    setLoginData((prev) => {
-      return{
-        ...prev,
-        [ name ] : value
-      }
-    })
+    // Clear error when user types
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }))
+    }
   }
 
-  const handleLoginSubmit = async (e) => {
+  const validateForm = () => {
+    const newErrors = {}
+
+    if (!formData.email) {
+      newErrors.email = "Email is required"
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Email is invalid"
+    }
+
+    if (!formData.password) {
+      newErrors.password = "Password is required"
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
 
-    const fetchData = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/login`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "content-type": "application/json"
-      },
-      body: JSON.stringify(loginData)
-    })
+    if (validateForm()) {
+      e.preventDefault()
 
-    const fetchRes = await fetchData.json()
+      const fetchData = await login(formData.email, formData.password);
+      console.log(fetchData)
+      
+      
+      toast(fetchData.message)
 
-    toast(fetchRes.message)
-
-    if(fetchRes.message === 'User not verify'){
-      navigate('/otpverification', { state: fetchRes.data })
-    }else if(fetchRes.message === 'Login successfull'){
-      if(location.pathname === '/login'){
-        navigate('/')
-      }else{
-        navigate(location.pathname)
-      }  
-    }
-
-    if (fetchRes.member) {
-      passedMember(fetchRes.member); // Pass any desired element or data
+      if(fetchData.message === 'User not verify'){
+        navigate('/otpverification', { state: fetchData.data })
+      }else if(fetchData.message === 'Login successfull'){
+        if(location.pathname === '/login'){
+          navigate('/')
+        }else{
+          navigate(location.pathname)
+        }  
+      }
     }
   }
 
- const google = () => {
-  window.open(`${process.env.REACT_APP_SERVER_DOMAIN}/auth/google`, "_self")
- }
+  const handleGoogleLogin = () => {
+    window.open(`${process.env.REACT_APP_SERVER_DOMAIN}/auth/google`, "_self")
+  }
 
   return (
-    <div className={styles.loginform}>
-      <div className={styles.formcon}>
-        <div onClick={google} className={styles.github}>Login with Google</div>
-        <form className={styles.form} onSubmit={handleLoginSubmit}>
-          <input type="text" placeholder="email" name="email" value={loginData.email} onChange={handleLoginChange}/>
-          <input type="password" placeholder="password" name="password" value={loginData.password} onChange={handleLoginChange} />
-          <button>Login</button>
-        </form>
+    <div className={styles.loginPage}>
+      <div className={styles.formContainer}>
+        <div className={styles.formCard}>
+          <h1 className={styles.formTitle}>Login</h1>
+          <p className={styles.formSubtitle}>Enter your credentials to access your account</p>
+
+          <form onSubmit={handleSubmit} className={styles.form}>
+            <Input
+              label="Email"
+              id="email"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="name@example.com"
+              error={errors.email}
+              required
+            />
+
+            <div className={styles.passwordField}>
+              <Input
+                label="Password"
+                id="password"
+                name="password"
+                type="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="••••••••"
+                error={errors.password}
+                required
+              />
+              <Link to="/forgetpassword" className={styles.forgotPassword}>
+                Forgot password?
+              </Link>
+            </div>
+
+            <Button type="submit" fullWidth>
+              Login
+            </Button>
+          </form>
+
+          <div className={styles.divider}>
+            <span>Or continue with</span>
+          </div>
+
+          <Button variant="outline" fullWidth onClick={handleGoogleLogin} className={styles.googleButton}>
+            <i className="fab fa-google"></i>
+            Login with Google
+          </Button>
+
+          <p className={styles.signupLink}>
+            Don't have an account? <Link to="/register">Sign up</Link>
+          </p>
+        </div>
       </div>
-
-      <Link to="/register" className={styles.link}>
-        {"Don't have an account?"} <p>Register</p>
-      </Link>
     </div>
-  );
-};
+  )
+}
 
-export default LoginForm;
+export default LoginForm
+

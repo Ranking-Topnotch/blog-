@@ -1,224 +1,321 @@
-import style from './blogId.module.css'
-import { GiCoinsPile, GiSelfLove } from "react-icons/gi";
-import { BiRepost, BiComment } from "react-icons/bi";
-import { MdDeleteOutline } from "react-icons/md"
-import { IoMdArrowRoundBack } from "react-icons/io";
-import { GiLoveMystery } from "react-icons/gi";
-import toast from "react-hot-toast";
-import React, { useState, useEffect } from 'react'
-import Comment from '../../component/comment/Comment';
-import Avatar from '../../assest/noavatar.png'
+import { useState, useEffect, useContext } from "react"
+import { useParams, Link, useNavigate } from "react-router-dom"
+import Button from "../../component/button/Button"
+import TextArea from "../../component/textArea/TextArea"
+import { mockBlogs, formatDate } from "../../utility/mockData"
+import { MdOutlineDeleteSweep } from "react-icons/md";
+import { AiOutlineLike } from "react-icons/ai";
+import { TfiCommentAlt } from "react-icons/tfi";
+import { FaRegShareSquare } from "react-icons/fa";
 import refreshToken from '../../component/refreshToken';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import toast from "react-hot-toast";
+import styles from "./blogId.module.css"
+import Input from "../../component/input/Input"
+import { UserContext } from "../../context/UserContext"
 
-const  BlogId = ({ member }) => {
-  const [ blog, setBlog ] = useState(null);
-  const [ comment, setComment ] = useState(null)
-  const [ isLoading, setIsLoading ] = useState(true);
-  const [ comInput, setComInput ] = useState(false);
+const BlogId = () => {
+  const navigate = useNavigate()
+  const { member } = useContext(UserContext)
+  console.log(member)
+  const { id } = useParams()
+  console.log(id)
+  const [blog, setBlog] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [liked, setLiked] = useState(false)
+  const [likesCount, setLikesCount] = useState(0)
+  const [showComments, setShowComments] = useState(false)
+  const [commentText, setCommentText] = useState("")
+  const [comments, setComments] = useState([])
   const [ postComment, setPostComment ] = useState({
     userId: '',
     blogId: '',
     username: '',
     content: ''
-  });
-  const [ like, setLike ] = useState(null)
-  
-  const { id } = useParams();
-  const navigate = useNavigate()
+  })
+  console.log(blog)
   
   
-  // fetching the blog by id that come's from params
 
   const fetchData = async () => {
-    try{
-      const res = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/blog/${id}`);
-      const resData = await res.json();
-      setBlog(resData.blogId);
-      setComment(resData.comment)
-      setIsLoading(false)
-    }catch(err){
-      console.log('Error fetching data:', err);
-    }
-  }
-  useEffect(() => {
-    fetchData();
-  }, [ id ]);
-
-  useEffect(() => {
-    if(member._id && id){
-      setPostComment(prev => ({
-        ...prev,
-        userId: member._id,
-        blogId: id,
-        username: member.username
-      }));
-    }
-  }, [member._id, id]);
-
-  const handleCommentChange = (e) => {
-    const { name, value } = e.target;
-
-    setPostComment(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  //fliping the comment section
-  const flipComment = () => {
-    setComInput(prev => !prev);
-  };
-
-  const goBack = () => {
-    navigate(-1); // Go back one step in the history
-  };
-
-  //commenting
-  const handleCommentSubmit = async (e) => {
-    e.preventDefault();
-
-    const fetchData = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/comment`, {
-      method: "POST",
-      headers: {
-        "content-type": "application/json"
-      },
-      body: JSON.stringify(postComment)
-    });
-
-    const resData = await fetchData.json()
-
-    if(resData.message === "Comment sent"){
-      toast(<p className={style.alert}>{resData.message}</p>)
-     
-      setComment(prevComments => [...prevComments, resData.comment])
-
-      setComInput(false)
-    }else{
-      toast(<p className={style.alert}>{resData.message}</p>) 
-    } 
-  };
-
-  const likePost = async () => {
-    const fetchData = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/likes`, {
-      method: "POST",
-      headers: {
-        "content-type": "application/json"
-      },
-      body: JSON.stringify({ userId: member._id, id })
-    });
-
-    const resData = await fetchData.json()
-     
-    if(resData.message === "Blog Liked"){
-      toast(<p className={style.alert}>{resData.message}</p>)
-      setBlog(prevBlog => ({...prevBlog, likes: resData.likes }))
-    }else if(resData.message === "Blog Disliked"){
-      toast(<p className={style.alert}>{resData.message}</p>) 
-      setBlog(prevBlog => ({...prevBlog, likes: resData.likes }))
-    }
-  }
-
-  const deleteBlog = async (memberId, blogId) => {
-    await refreshToken()
-    const accessToken = `; ${document.cookie}`.split(`; accessToken=`).pop().split(';').shift();
-      const fetchData = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/deleteblog`, {
-        method: "POST",
-        headers: {
-            "content-type": "application/json",
-            "Authorization": `Bearer ${accessToken}`
-        },
-        body: JSON.stringify({
-          memberId, 
-          blogId
-        })
-    })
-
-    const resData = await fetchData.json()
+        try{
+          const res = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/member/blog/${id}`);
+          const resData = await res.json();
+          console.log(resData.blogId)
+          setBlog(resData.blogId);
+          setComments(resData.comment)
+          setLoading(false)
+        }catch(err){
+          console.log('Error fetching data:', err);
+        }
+      }
+      useEffect(() => {
+        fetchData();
+      }, [ id ]);
     
-    if(resData.message === "Blog deleted"){
-      toast(<p className={style.alert}>{resData.message}</p>)
-      navigate('/blog')
-    }else if(resData.message === "Not authorized"){
-      toast(<p className={style.alert}>{resData.message}</p>)
-    } 
-  }
-
-  const deleteComment = async ( _id ) => {
-    const fetchData = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/deletecomment`, {
-      method: "POST",
-      headers: {
-          "content-type": "application/json"
-      },
-      body: JSON.stringify({
-        _id
+      useEffect(() => {
+        if(member._id && id){
+          setPostComment(prev => ({
+            ...prev,
+            userId: member._id,
+            blogId: id,
+            username: member.username
+          }));
+        }
+      }, [member._id, id]);
+    console.log(postComment)
+      const handleCommentChange = (e) => {
+        const { name, value } = e.target;
+    
+        setPostComment(prev => ({
+          ...prev,
+          [name]: value
+        }));
+      };
+    
+      //fliping the comment section
+      const flipComment = () => {
+        setShowComments(prev => !prev);
+      };
+    
+      const goBack = () => {
+        navigate(-1); // Go back one step in the history
+      };
+    
+      //commenting
+      const handleCommentSubmit = async (e) => {
+        e.preventDefault();
+        console.log(postComment)
+    
+        const fetchData = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/membercomment/comment`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json"
+          },
+          body: JSON.stringify(postComment)
+        });
+    
+        const resData = await fetchData.json()
+    
+        if(resData.message === "Comment sent"){
+          toast(<p className={styles.alert}>{resData.message}</p>)
+         
+          setComments(prevComments => [...prevComments, resData.comment])
+    
+          setShowComments(false)
+        }else{
+          toast(<p className={styles.alert}>{resData.message}</p>) 
+        } 
+      };
+    
+      const likePost = async () => {
+        console.log({ userId: member._id, id })
+        const fetchData = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/member/blog/likes`, {
+          method: "POST",
+          headers: {
+            "content-type": "application/json"
+          },
+          body: JSON.stringify({ userId: member._id, id })
+        });
+    
+        const resData = await fetchData.json()
+         
+        if(resData.message === "Blog Liked"){
+          toast(<p className={styles.alert}>{resData.message}</p>)
+          setBlog(prevBlog => ({...prevBlog, likes: resData.likes }))
+        }else if(resData.message === "Blog Disliked"){
+          toast(<p className={styles.alert}>{resData.message}</p>) 
+          setBlog(prevBlog => ({...prevBlog, likes: resData.likes }))
+        }
+      }
+    
+      const deleteBlog = async (memberId, blogId) => {
+        await refreshToken()
+        const accessToken = `; ${document.cookie}`.split(`; accessToken=`).pop().split(';').shift();
+          const fetchData = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/member/deleteblog`, {
+            method: "POST",
+            headers: {
+                "content-type": "application/json",
+                "Authorization": `Bearer ${accessToken}`
+            },
+            body: JSON.stringify({
+              memberId, 
+              blogId
+            })
+        })
+    
+        const resData = await fetchData.json()
+        
+        if(resData.message === "Blog deleted"){
+          toast(<p className={styles.alert}>{resData.message}</p>)
+          navigate('/blog')
+        }else if(resData.message === "Not authorized"){
+          toast(<p className={styles.alert}>{resData.message}</p>)
+        } 
+      }
+    
+      const deleteComment = async ( _id ) => {
+        const fetchData = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/membercomment/deletecomment`, {
+          method: "DELETE",
+          headers: {
+              "content-type": "application/json"
+          },
+          body: JSON.stringify({
+            _id
+          })
       })
-  })
+    
+      const resData = await fetchData.json()
+      
+      if(resData.message === "Comment deleted"){
+        toast(<p className={styles.alert}>{resData.message}</p>)
+        setComments(comments.filter(e => e._id !== _id))
+      } 
+    }
 
-  const resData = await fetchData.json()
-  
-  if(resData.message === "Comment deleted"){
-    toast(<p className={style.alert}>{resData.message}</p>)
-    setComment(comment.filter(e => e._id !== _id))
-  } 
-}
+  if (loading) {
+    return (
+      <div className="container">
+        <div className={styles.loading}>Loading blog...</div>
+      </div>
+    )
+  }
 
   return (
-    <div className={style.blogId}>
-      {isLoading ? (
-        <p>Loading</p>
-      ) : (
-        <div key={blog._id} className={style.blog_con}>
-          
-          <div className={style.blogcon}>
-            <div className={style.imgcon}>
-              
-              <Link onClick={goBack} className={style.back}>< IoMdArrowRoundBack /> </Link>
-              { blog.img && <img src={blog.img} height={500} width={300} /> }
-            </div>
-
-            <div className={style.blog_id}>
-              <div>
-                <div className={style.usercon}>
-                  <div>
-                    <Link to={`/${blog.username}`}> <img className={style.user} src={blog.img ? blog.img : Avatar} alt='blodID' height={20} width={20} /> </Link>
-                    <Link to={`/${blog.username}`}> <p className={style.username}>{blog.username}</p> </Link>
-                  </div>
-                  
-                  { member._id === blog.userId && <p> <MdDeleteOutline className={style.delete} onClick={() => deleteBlog(member._id,  blog._id)}/> </p>}
-                </div>
-
-                <h1 className={style.head}>{blog.title}</h1>
-                <p className={style.date}>{blog.createdAt.split("T")[0] + " " + blog.createdAt.split("T")[1].split(".")[0]}</p>
-
-                <p className={style.body}>{blog.body}</p>
-              </div>
-
-              <div className={style.interact}>
-                <div>{ blog.likes.includes(member._id) ? <GiLoveMystery onClick={likePost} className={style.like}/> : <GiSelfLove onClick={likePost} className={style.dislike}/>}<p>{blog.likes.length <= 0 ? '' : blog.likes.length}</p></div>
-                <div><BiComment onClick={flipComment} className={style.comment}/><p>{ comment.length <= 0 ? '' : comment.length}</p></div>
-                <div><BiRepost className={style.repost}/> <p></p></div>
-              </div>
-            </div>
-
-          </div>
-
-          <div className={style.commentInput}>
-            
-            { comInput && <form onSubmit={handleCommentSubmit}>
-              <input type={'text'} placeholder='userId' name='userId' value={postComment.userId} hidden />
-              <input type={'text'} placeholder='blogId' name='blogId' value={postComment.blogId} hidden />
-              <input type={'text'} placeholder='userId' name='username' value={postComment.username} hidden />
-              <textarea placeholder='A penny for your thought' name='content' value={postComment.content} onChange={handleCommentChange} className={style.text} autoFocus/>
-              <button className={style.button}>Comment</button>
-            </form>}
-            
-            <Comment comment={comment} deleteComment={deleteComment} member={member}/> 
-          </div>
+    <div className={styles.blogDetailPage}>
+      <div className="container">
+        <div className={styles.backLink}>
+          <Link to="/blog">&larr; Back to blogs</Link>
         </div>
-      )}
-    </div>  
-  );
-};
 
-export default BlogId;
+        <article className={styles.blogArticle}>
+          <header className={styles.blogHeader}>
+            <div>
+              <h1 className={styles.blogTitle}>{blog.title}</h1>
+              <MdOutlineDeleteSweep onClick={deleteBlog} className={styles.deleteButton}/>
+            </div>
+            <div className={styles.authorInfo}>
+              <div className={styles.avatar}>
+                <img src={blog.profile || "/placeholder.svg"} alt={blog.username} />
+              </div>
+              <div className={styles.authorDetails}>
+                <h3 className={styles.authorName}>{blog.username}</h3>
+                <p className={styles.date}>{formatDate(blog.createdAt)}</p>
+              </div>
+            </div>
+          </header>
+
+          {blog.img && (
+            <div className={styles.blogImage}>
+              <img src={blog.img || "/placeholder.svg"} alt={blog.title} />
+            </div>
+          )}
+
+          <div className={styles.blogContent}>
+            <p>{blog.body}</p>
+            {/* In a real app, you would render the full blog content here */}
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et
+              dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
+              ea commodo consequat.
+            </p>
+            <p>
+              Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+              Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est
+              laborum.
+            </p>
+            <h2>Key Takeaways</h2>
+            <ul>
+              <li>First important point about the topic</li>
+              <li>Second key insight that readers should remember</li>
+              <li>Final thought to conclude the article</li>
+            </ul>
+          </div>
+
+          <div className={styles.blogActions}>
+            <button className={`${styles.actionButton} ${liked ? styles.liked : styles.disliked}`} onClick={likePost}>
+            { blog.likes.includes(member._id) ? <AiOutlineLike onClick={likePost} className={styles.like}/> : <AiOutlineLike onClick={likePost} className={styles.dislike}/>}
+              {/* <AiOutlineLike className={liked ? styles.liked : ""}/> */}
+              <span>{blog.likes.length}</span>
+            </button>
+            <button className={styles.actionButton} onClick={() => setShowComments(!showComments)}>
+              <TfiCommentAlt className="fas fa-comment" />
+              <span>{comments.length}</span>
+            </button>
+            <button className={styles.actionButton}>
+              <FaRegShareSquare className="fas fa-share"/>
+              <span>Share</span>
+            </button>
+          </div>
+
+          {showComments && (
+            <div className={styles.commentsSection}>
+              <h3 className={styles.commentsTitle}>Comments ({comments.length})</h3>
+
+              <form onSubmit={handleCommentSubmit} className={styles.commentForm}>
+                <Input 
+                  placeholder="UserID"
+                  name='userId'
+                  value={postComment.userId} 
+                  onChange={handleCommentChange}
+                  hidden={true}
+                />
+                <Input 
+                  placeholder="Blog Id"
+                  name='blogId'
+                  value={postComment.blogId} 
+                  onChange={handleCommentChange}
+                  hidden
+                />
+                <Input 
+                  placeholder="Devloper Username"
+                  name='username'
+                  value={postComment.username} 
+                  onChange={handleCommentChange}
+                  hidden
+                />
+                <TextArea
+                  placeholder="Add a comment..."
+                  name='content'
+                  value={postComment.content}
+                  onChange={handleCommentChange}
+                  rows={3}
+                />
+                <Button type="submit" disabled={!postComment.content.trim()}>
+                  Post Comment
+                </Button>
+              </form>
+
+              <div className={styles.commentsList}>
+                {comments.length > 0 ? (
+                  comments.map((comment) => (
+                    <div key={comment._id} className={styles.comment}>
+                      <div >
+                        <div className={styles.commentHeader}>
+                          <div className={styles.commentAvatar}>
+                            <img src={comment.profile || "/placeholder.svg"} alt={comment.username} />
+                          </div>
+                          <div className={styles.commentAuthor}>
+                            <h4>{comment.username}</h4>
+                            {/* <p>{formatDate(comment.createdAt)}</p> */}
+                          </div>
+                        </div>
+                        <MdOutlineDeleteSweep className={styles.deleteButton} onClick={() => deleteComment(comment._id)}/> 
+                      </div> 
+                        <p className={styles.commentText}>{comment.content}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p className={styles.noComments}>No comments yet. Be the first to comment!</p>
+                )}
+              </div>
+            </div>
+          )}
+        </article>
+      </div>
+    </div>
+  )
+}
+
+export default BlogId
+
+

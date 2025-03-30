@@ -1,10 +1,10 @@
 import React from 'react'
 import Newblog from '../../component/newblog/Newblog'
 
-const Postblog = ({ member }) => {
+const Postblog = () => {
   return (
     <div>
-        <Newblog member={ member }/>
+        <Newblog/>
     </div>
   )
 }

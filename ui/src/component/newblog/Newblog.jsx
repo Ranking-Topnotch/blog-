@@ -1,133 +1,202 @@
-import React, { useEffect, useState } from 'react'
+import { useState, useContext, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import Button from "../../component/button/Button"
+import Input from "../../component/input/Input"
+import TextArea from "../../component/textArea/TextArea"
 import { ImageUtility } from '../../utility/ImageUtility'
+import styles from "./newblog.module.css"
+import { UserContext } from "../../context/UserContext"
 import Avatar from '../../assest/noavatar.png'
-import style from './newblog.module.css'
 import toast from 'react-hot-toast'
-import { useNavigate } from 'react-router-dom'
 
-const Newblog = ({ member }) => {
-    const [ userIdLoaded, setUserIdLoaded ] = useState(false)
-    const [ newPost, setNewPost ] = useState({
-        profile: '',
-        userId: '',
-        username: '',
-        title: '',
-        image: '',
-        img: '',
-        body: ''
+const NewBlog = () => {
+  const { member } = useContext(UserContext)
+  const [ userIdLoaded, setUserIdLoaded ] = useState(false)
+
+  const navigate = useNavigate()
+
+  const [formData, setFormData] = useState({
+    userId: '',
+    profile: '',
+    username: '',
+    title: '',
+    image: '',
+    img: '',
+    body: ''
+  })
+  const [errors, setErrors] = useState({})
+
+  useEffect( () => {
+      if(member._id){
+          setFormData(( prev ) => ({
+              ...prev,
+              profile: member.img,
+              userId: member._id,
+              username: member.username
+          }))
+
+          setUserIdLoaded(true)
+      }
+  }, [ member._id ])
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+
+    // Clear error when user types
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }))
+    }
+  }
+
+  const validateForm = () => {
+    const newErrors = {}
+
+    if (!formData.title) {
+      newErrors.title = "Title is required"
+    }
+
+    if (!formData.body) {
+      newErrors.body = "Blog content is required"
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  const uploadImage = async (type) => {
+    let data = new FormData()
+    data.append("file", type === 'image' ? formData.img : '')
+    data.append("upload_preset", type === 'image' ? 'images_preset' : '')  
+
+    try{
+        let cloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
+        let resourceType = type === 'image' ? formData.img : 'video';
+        let api = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
+    
+        const fetchData = await fetch(api, {
+            method: "POST",
+            body: data
+        })
+
+        const res = await fetchData.json()
+        return res.secure_url
+    }catch(err){
+        console.log(err)
+    }
+}
+
+const handlePostImage = async(e) => {
+    const data = await ImageUtility(e.target.files[0])
+
+    setFormData((prev) => {
+        return{
+            ...prev,
+            image: data,
+            img: e.target.files[0]
+        }
     })
+}
 
-    const navigate = useNavigate()
+  const handleSubmit = async(e) => {
+    e.preventDefault()
 
-    useEffect( () => {
-        if(member._id){
-            setNewPost(( prev ) => ({
-                ...prev,
-                profile: member.img,
-                userId: member._id,
-                username: member.username
-            }))
+    if (validateForm()) {
+      const imgUrl = await uploadImage('image');
+      
+      setFormData((prev) => ({
+          ...prev,
+          image: imgUrl
+      }));
+      const fetchData = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/member/blog/newblog`, {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+              ...formData,
+              image: imgUrl 
+          })
+      });
 
-            setUserIdLoaded(true)
-        }
-    }, [ member._id ])
+      const resData = await fetchData.json()
 
-    const handlePostChange = ( e ) => {
-        const { name, value } = e.target
-
-        setNewPost(( prev ) => {
-
-            return{
-                ...prev,
-                [ name ]: value
-            }
-        })
+      if(resData.message === "Blog posted"){
+          toast(<p className={styles.alert}>{resData.message}</p>)
+          navigate('/blog')
+      }else{
+          toast(<p className={styles.alert}>{resData.message}</p>) 
+      }
     }
+  }
 
-    const uploadImage = async (type) => {
-        let data = new FormData()
-        data.append("file", type === 'image' ? newPost.img : '')
-        data.append("upload_preset", type === 'image' ? 'images_preset' : '')  
-    
-        try{
-            let cloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
-            let resourceType = type === 'image' ? newPost.img : 'video';
-            let api = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
-        
-            const fetchData = await fetch(api, {
-                method: "POST",
-                body: data
-            })
-
-            const res = await fetchData.json()
-            return res.secure_url
-        }catch(err){
-            console.log(err)
-        }
-    }
-
-    const handlePostImage = async(e) => {
-        const data = await ImageUtility(e.target.files[0])
-
-        setNewPost((prev) => {
-            return{
-                ...prev,
-                image: data,
-                img: e.target.files[0]
-            }
-        })
-    }
-
-    const handlePostSubmit = async (e) => {
-        e.preventDefault()
-            const imgUrl = await uploadImage('image');
-            
-            setNewPost((prev) => ({
-                ...prev,
-                image: imgUrl
-            }));
-    
-            const fetchData = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/newblog`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    ...newPost,
-                    image: imgUrl 
-                })
-            });
-    
-        const resData = await fetchData.json()
-
-        if(resData.message === "Blog posted"){
-            toast(<p className={style.alert}>{resData.message}</p>)
-            navigate('/blog')
-        }else{
-            toast(<p className={style.alert}>{resData.message}</p>) 
-        }
-    }
+  const handleSaveDraft = () => {
+  
+    console.log("Draft saved:", formData)
+    alert("Draft saved successfully!")
+  }
 
   return (
-    <div className={style.postHead}>
-        <h3>What do you have for us?</h3>
-        { userIdLoaded && <form className={style.form} onSubmit={handlePostSubmit}> 
-            <input type={'text'} placeholder='userId' name='userId' value={newPost.userId} readOnly hidden />
-            <input type={'text'} placeholder='profile' name='profile' value={newPost.profile} readOnly hidden />
-            <input type={'text'} placeholder='username' name='username' value={newPost.username} readOnly hidden />
-            <input type={'text'} placeholder='Blog title' name='title' value={newPost.title} onChange={handlePostChange}/>
+    <div className={styles.postBlogPage}>
+      <div className="container">
+        <div className={styles.pageHeader}>
+          <h1 className={styles.pageTitle}>Create a New Blog Post</h1>
+          <p className={styles.pageSubtitle}>Share your knowledge and experiences with the developer community</p>
+        </div>
+
+        <div className={styles.formCard}>
+          <div className={styles.authorInfo}>
+            <div className={styles.avatar}>
+              <img src={member.img || "/placeholder.svg"} alt={member.username} />
+            </div>
+            <div className={styles.authorDetails}>
+              <h3 className={styles.authorName}>{member.username}</h3>
+              <p className={styles.authorRole}>{member.role}</p>
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmit} className={styles.form}>
+            <Input
+              label="Blog Title"
+              id="title"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              placeholder="Enter a descriptive title"
+              error={errors.title}
+              required
+            />
+
             <label htmlFor='image'>
-                <div className={style.imageSec}>
-                    { newPost.image ? <img className={style.blogImage} src={newPost.image} alt='blog' height={20} width={20} /> : <img className={style.blogImage} src={Avatar} alt='blog' height={20} width={20} />}
-                    <input id='image' className={style.imageUpload} type={'file'} placeholder="image" accept="image/*"  name="image" onChange={handlePostImage} hidden/>
-                </div>
-            </label> 
-            <textarea className={style.blogInput} type={'text'} placeholder='About the topic' name='body' value={newPost.body} onChange={handlePostChange} />
-            <input id='image' type={'file'} placeholder="image" accept="image/*" name="img" onChange={handlePostImage} hidden/>
-            <button type={'submit'}>Post</button>
-        </form>}
+               <div className={styles.imageSec}>
+                  { formData.image ? <img className={styles.blogImage} src={formData.image} alt='blog' height={20} width={20} /> : <img className={styles.blogImage} src={Avatar} alt='blog' height={20} width={20} />}
+                   <input id='image' className={styles.imageUpload} type={'file'} placeholder="image" accept="image/*"  name="image" onChange={handlePostImage} hidden/>
+               </div>
+           </label> 
+
+            <TextArea
+              label="Blog Content"
+              id="body"
+              name="body"
+              value={formData.body}
+              onChange={handleChange}
+              placeholder="Write your blog content here..."
+              rows={10}
+              error={errors.body}
+              required
+            />
+
+            <div className={styles.formActions}>
+              <Button type="button" variant="outline" onClick={handleSaveDraft}>
+                Save as Draft
+              </Button>
+              <Button type="submit">Publish Post</Button>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
   )
 }
 
-export default Newblog
+export default NewBlog
+

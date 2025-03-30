@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider} from 'react-router-dom'
 import Home from './page/home/Home'
 import Blog from './page/blog/Blog'
@@ -7,26 +7,21 @@ import Register from './page/register/Register'
 import BlogId from './page/blogId/BlogId'
 import Postblog from './page/postblog/Postblog'
 import Layout from './component/layout/Layout';
-import userSession from './component/userSession';
-
 import './App.css'
 import Profile from './page/profile/Profile'
 import OtpVerification from './page/otp/OtpVerification'
 import Contact from './page/contact/Contact'
+import ForgotPassword from './page/forgetPassword/ForgetPassword'
+import { UserContext, UserProvider } from './context/UserContext'
+import { UseIsAuthenticated } from './context/UseIsAuthenticated'
+import ProtectedRoute from './component/ProtectedRoute'
+import ResetPassword from './page/forgetPassword/ResetPassword'
+
 
 
 const App = () => {
-  const [ member, setMember ] = useState(false)
-
-  useEffect(() => {
-    
-    userSession().then(({sessionActive, member}) => {
-      // Update member state based on session status
-      setMember(sessionActive ? member : false);
-    }).catch(error => {
-      console.error("Error checking session:", error);
-    });
-  }, []);
+  const { member, setMember } = useContext(UserContext);
+  const [ isAuthenticated, setIsAuthenticated ] = useState(false);
    
   useEffect(() => {
     const getUser = () => {
@@ -44,7 +39,7 @@ const App = () => {
           throw new Error('Authentication failed!');
         })
         .then((resObject) => {
-          setMember(resObject.user);
+          setMember(resObject.member);
         })
         .catch((err) => {
           console.log(err);
@@ -55,28 +50,36 @@ const App = () => {
     
   }, []);
 
-  const passedMember = (member) => {
-    setMember(member);
-  }
-  
   const pages = createBrowserRouter(createRoutesFromElements(
-    <Route element={<Layout member={ member }/>}>
-      <Route index element={<Home member={ member }/>} />
-      <Route path='/blog' element={ member._id ? <Blog member={ member }/> : <Login passedMember={passedMember} />} /> 
-      <Route path='/blog/:id' element={ member._id ? <BlogId member={ member }/> : <Login passedMember={passedMember} /> } />
-      <Route path='/newblog' element={<Postblog member={ member }/>} />
-      <Route path='/contact' element={<Contact />} />
-      <Route path='/login' element={<Login passedMember={passedMember}/>} />
+    <Route element={<Layout/>}>
+      <Route index element={<Home />} />
       <Route path='/register' element={<Register />} />
+      <Route path='/login' element={<Login />} />
       <Route path='/otpverification' element={<OtpVerification />} />
-      <Route path={`/:username`} element={member.username ? < Profile member={ member }/> : <Login passedMember={passedMember} />}  />
+      <Route path='/forgetpassword' element={ <ForgotPassword /> } /> 
+      <Route path={`/resetpassword/:token `} element={ <ResetPassword /> } /> 
+      <Route path='/contact' element={<Contact />} />
+
+      <Route element={<ProtectedRoute />} >
+        <Route path='/blog' element={ <Blog /> } /> 
+        <Route path='/blog/:id' element={<BlogId/> } />
+        <Route path='/newblog' element={<Postblog />} />
+        <Route path={`/profile/:username`} element={< Profile />}  />
+      </Route>
     </Route>
+    
   )) 
 
   return (
-    <div className='app'>
-      <RouterProvider router={pages} />
-    </div>
+    <UseIsAuthenticated.Provider value={{ isAuthenticated, setIsAuthenticated }}>
+      <UserProvider>
+        <div className='app'>
+          <main className="main-content">
+            <RouterProvider router={pages} />
+          </main>
+        </div>
+      </UserProvider>
+  </UseIsAuthenticated.Provider>  
   )
 }
 

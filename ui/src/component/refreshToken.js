@@ -7,8 +7,8 @@ const refreshToken = async () => {
     
     if (!accessToken) {
         try {
-            const fetchData = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/refreshtoken`, {
-                method: "POST",
+            const fetchData = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/session/refreshtoken`, {
+                method: "GET",
                 credentials: "include",
                 headers: {
                     "content-type": "application/json",

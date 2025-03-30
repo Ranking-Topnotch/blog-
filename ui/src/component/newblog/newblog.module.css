@@ -1,35 +1,73 @@
-.postHead{
-    margin: auto;
-    width: 50%;
-    color: white;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    margin-top: 3em;
+.postBlogPage {
+  padding: 2rem 0;
 }
 
-.alert{
-  background-color: white;
-  color: blueviolet;
+.pageHeader {
+  margin-bottom: 2rem;
 }
 
-.form{
-    display: flex;
-    flex-direction: column;
-    margin-top: 2em;
-}
-  
-.form input{
-    padding: 20px;
-    background-color: transparent;
-    color: var(--color-white);
-    border: 2px solid white;
-    border-radius: 5em;
-    font-weight: bold;
-    outline: none;
-    margin-top: 1em;  
+.pageTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
 }
 
-.imageSec{
-  position: relative;
+.pageSubtitle {
+  color: var(--text-light);
+  font-size: 1.125rem;
+}
+
+.formCard {
+  background-color: var(--background-color);
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.authorInfo {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 1rem;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.authorName {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.authorRole {
+  font-size: 0.875rem;
+  color: var(--text-light);
+  margin: 0;
+}
+
+.form {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
 }
 
 .blogImage{
@@ -39,69 +77,17 @@
   border-radius: 5em;
 }
 
-.imageUpload{
-  position: absolute;
-  left: 0;
-  width: 100%;
-  height: 35em;
-  border-radius: 5em;
-  border: 10px solid black;
-}
-
-.blogInput{
-  height: 35em;
-  margin-bottom: 2em;
-  border-radius: 5em;
-  background-color: transparent;
-  color: var(--color-white);
-  font-weight: bold;
-  margin-top: 1em;
-  resize: none;
-  padding: 20px;
-}
-  
-.form button{
-  padding: 20px;
-  cursor: pointer;
-  background-color: var(--color-black);
-  color: var(--color-white);
-  font-weight: bold;
-  border: none;
-  border-radius: 5px;
-}
-
-@media screen and (max-width: 1000px){
-  .postHead{
-    width: 70%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+@media (max-width: 768px) {
+  .formCard {
+    padding: 1.5rem;
   }
 
-  .blogImage{
-    width: 100%; 
+  .formActions {
+    flex-direction: column-reverse;
   }
 
-  .imageUpload{ 
+  .formActions button {
     width: 100%;
   }
 }
 
-@media screen and (max-width: 600px){
-  .postHead{
-    width: 100%;
-  }
-
-  .blogImage{
-    height: 50%; 
-  }
-
-  .imageUpload{ 
-    height: 50%;
-  }
-
-  .blogInput{
-    height: 20em;
-  }
-}

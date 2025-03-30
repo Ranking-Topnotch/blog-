@@ -9,7 +9,7 @@ const logout = () => {
 
 const userSession = async () => {
     try {
-        const response = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/usersession`, {
+        const response = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/session/usersession`, {
             method: "GET",
             credentials: "include",
             headers: {
@@ -18,7 +18,7 @@ const userSession = async () => {
         });
 
         const resData = await response.json()
-        
+        console.log(resData)
         if (resData.sessionActive) {
             return { sessionActive: resData.sessionActive, member: resData.member };
         }else{
