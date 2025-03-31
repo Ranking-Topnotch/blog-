@@ -19,12 +19,12 @@ const Profile = () => {
   const [activeTab, setActiveTab] = useState("posts")
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [formData, setFormData] = useState({
-    userId: member._id || '',
-    img: member.img || '',
-    about: member.about || '',
-    role: member.role || '',
-    link: member.link || '',
-    address: member.address || ''
+    userId: member?._id || '', 
+    img: member?.img || '',
+    about: member?.about || '',
+    role: member?.role || '',
+    link: member?.link || '',
+    address: member?.address || ''
   })
 
 
@@ -38,6 +38,7 @@ const Profile = () => {
     };
 
     const fetchMember = async () => {
+      if (!username) return;
       const res = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/member/${username}`);
       const resData = await res.json();
       
@@ -56,19 +57,18 @@ const Profile = () => {
     fetchMember();
   }, [ username ])
 
-  useEffect(() => {
-    // Update form data when user data changes
-    if (user) {
-      setFormData({
-        userId: member._id,  
-        img: user.img || "",
-        about: user.about || "",
-        role: user.role || "",
-        link: user.link || "",
-        address: user.address || "",
-      })
-    }
-  }, [user])
+ useEffect(() => {
+  if (user && member) {  
+    setFormData({
+      userId: member?._id || '',
+      img: user.img || "",
+      about: user.about || "",
+      role: user.role || "",
+      link: user.link || "",
+      address: user.address || "",
+    })
+  }
+}, [user, member])
 
   const handleChange = (e) => {
     const { name, value } = e.target
