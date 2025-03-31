@@ -29,8 +29,6 @@ const ProtectedRoute = () => {
                 
             } finally {
                 setIsLoading(false);
-                setIsAuthenticated(false);
-                setMember(null);
             }
         };
 

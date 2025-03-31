@@ -53,7 +53,7 @@ module.exports = {
             if(err){
                 return res.status(403).json({ message: false, sessionActive: false });
             } 
-            return res.status(401).json({ sessionActive: true, member: memberData });
+            return res.status(200).json({ sessionActive: true, member: memberData });
         });  
     },
 
