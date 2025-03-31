@@ -155,7 +155,7 @@ const Profile = () => {
                   <div className={styles.metaItem}>
                     <i className="fas fa-link"></i>
                     <a href={user.link} target="_blank" rel="noopener noreferrer">
-                      {user.link.replace(/^https?:\/\//, "")}
+                      {(user.link || "").replace(/^https?:\/\//, "")}
                     </a>
                   </div>
                 )}
