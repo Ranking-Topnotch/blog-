@@ -45,7 +45,9 @@ module.exports = {
     },
 
     userSession: ( req, res ) =>  {
+        
         const refreshtoken = req.cookies.refreshToken
+        console.log(refreshtoken)
         if(!refreshtoken){
             return res.status(200).json({ sessionActive: false });
         }
