@@ -30,8 +30,6 @@ const ProtectedRoute = () => {
                 
             } finally {
                 setIsLoading(false);
-                setIsAuthenticated(false);
-                setMember(null);
             }
         };
 
@@ -44,7 +42,7 @@ const ProtectedRoute = () => {
 
     if (isLoading) return <p>Loading...</p>; 
 
-    return member ? <Outlet /> : <Navigate to="/login" />;
+    return isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
 };
 
 export default ProtectedRoute;
