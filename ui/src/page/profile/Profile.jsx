@@ -19,7 +19,7 @@ const Profile = () => {
   const [activeTab, setActiveTab] = useState("posts")
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [formData, setFormData] = useState({
-    userId: member._id,
+    userId: member._id || '',
     img: member.img || '',
     about: member.about || '',
     role: member.role || '',
