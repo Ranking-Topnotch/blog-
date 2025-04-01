@@ -19,7 +19,7 @@ passport.use(new GoogleStrategy({
       await connectToDb()
       
       let newMember = await Member.findOne({ email: profile._json.email });
-
+console.log({ email: profile._json.email })
       if(!newMember){
         newMember = await Member({
           img: profile.photos[0].value,
@@ -34,7 +34,7 @@ passport.use(new GoogleStrategy({
         console.log("memeb", newMember)
       const accessToken = jwt.sign({email: profile._json.email, username: profile.name.givenName, _id: newMember._id, img: newMember.img}, process.env.ACCESS_TOKEN_KEY, { expiresIn: "1m"} )
       const refreshToken = jwt.sign({email: profile._json.email, username: profile.name.givenName, _id: newMember._id, img: newMember.img}, process.env.REFRESH_TOKEN_KEY, { expiresIn: "10m"} )
-        console.log(accessToken, "tokeen", refreshToken")
+        console.log(accessToken, "tokeen", refreshToken)
       return cb(null, newMember, { accessToken, refreshToken });
     }catch(err){
       return cb(err);
