@@ -159,8 +159,8 @@ module.exports = {
     },
 
     createMember:  async ( req, res) => {
-        const { img, username, email, password, confirmPassword } = req.body
-            
+        const { img, image, username, email, password, confirmPassword } = req.body
+    
         try{
             await connectToDb()
     
@@ -187,7 +187,7 @@ module.exports = {
             }
     
             const newMember = await Member({
-                img,
+                img: image,
                 username,
                 email,
                 password: hashPassword,
@@ -263,13 +263,13 @@ module.exports = {
     },
 
     memberProfile: async ( req, res ) => {
-        const { userId, img, about, role, link, address } = req.body
+        const { userId, image, img, about, role, link, address } = req.body
         
         try{
             await connectToDb()
             const memberDetail = await Member.findOne({ _id: userId })
             const updateMember = await Member.findOneAndUpdate({ _id: userId }, {
-                img: !img ? memberDetail.img : img,
+                img: !image ? memberDetail.image : image,
                 about: !about ? memberDetail.about : about, 
                 role: !role ? memberDetail.role : role, 
                 link: !link ? memberDetail.link : link, 

@@ -9,6 +9,9 @@ import { mockUser, mockBlogs } from "../../utility/mockData"
 import toast from "react-hot-toast";
 import styles from "./profile.module.css"
 import { UserContext } from "../../context/UserContext"
+import Avatar from '../../assest/noavatar.png'
+import { ImageUtility } from '../../utility/ImageUtility'
+
 
 const Profile = () => {
   const { username} = useParams()
@@ -19,7 +22,8 @@ const Profile = () => {
   const [activeTab, setActiveTab] = useState("posts")
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [formData, setFormData] = useState({
-    userId: member?._id || '', 
+    userId: member?._id || '',
+    image: '', 
     img: member?.img || '',
     about: member?.about || '',
     role: member?.role || '',
@@ -45,7 +49,7 @@ const Profile = () => {
       setUser(resData);
       setFormData({
         userId: resData._id,
-        img: resData.img || '',
+        img: resData.img || '', //edited
         about: resData.about || '',
         role: resData.role || '',
         link: resData.link || '',
@@ -61,7 +65,7 @@ const Profile = () => {
   if (user && member) {  
     setFormData({
       userId: member?._id || '',
-      img: user.img || "",
+      img: user.img || "", //edited
       about: user.about || "",
       role: user.role || "",
       link: user.link || "",
@@ -75,33 +79,69 @@ const Profile = () => {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
+  const uploadImage = async (type) => {
+      let data = new FormData()
+      data.append("file", type === 'image' ? formData.img : '')
+      data.append("upload_preset", type === 'image' ? 'images_preset' : '')  
+  
+      try{
+          let cloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
+          let resourceType = type === 'image' ? formData.img : 'video';
+          let api = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
+      
+          const fetchData = await fetch(api, {
+              method: "POST",
+              body: data
+          })
+  
+          const res = await fetchData.json()
+          return res.secure_url
+      }catch(err){
+          console.log(err)
+      }
+  }
+  
+  const handlePostImage = async(e) => {
+      const data = await ImageUtility(e.target.files[0])
+  
+      setFormData((prev) => {
+          return{
+              ...prev,
+              image: data,
+              img: e.target.files[0]
+          }
+      })
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
 
+    const imgUrl = await uploadImage('image');
     const updatedProfile = {
         ...user,
-        ...formData
+        ...formData, 
+        image: imgUrl
     };
-    console.log(updatedProfile)
-      const fetchData = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/profile`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "content-type": "application/json"
-        },
-        body: JSON.stringify(updatedProfile)
-      })
 
-      const resData = await fetchData.json()
+    const fetchData = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/profile`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "content-type": "application/json"
+      },
+      body: JSON.stringify(updatedProfile)
+    })
 
-      if(resData.message === "Profile updated successfull"){
-        setUser(updatedProfile);
-        toast(resData.message)
-        setIsEditModalOpen(false)
-      }
+    const resData = await fetchData.json()
+
+    if(resData.message === "Profile updated successfull"){
+      setUser(updatedProfile);
+      toast(resData.message)
+      setIsEditModalOpen(false)
+    }
 
     // Update local user state
-    setUser((prev) => ({ ...prev, ...formData }))
+    setUser((prev) => ({ ...prev, ...formData, img: formData.image }))
 
     // Close modal
     
@@ -239,14 +279,21 @@ const Profile = () => {
       {/* Edit Profile Modal */}
       <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} title="Edit Profile">
         <form onSubmit={handleSubmit} className={styles.editForm}>
-          <Input
+          {/* <Input
             label="Profile Image URL"
             id="img"
             name="img"
             value={formData.img}
             onChange={handleChange}
             placeholder="https://example.com/image.jpg"
-          />
+          /> */}
+
+          <label htmlFor='image'>
+            <div className={styles.imageSec}>
+              { formData.img ? <img className={styles.blogImage} src={formData.image ? formData.image : formData.img } alt='blog' height={20} width={20} /> : <img className={styles.blogImage} src={Avatar} alt='blog' height={20} width={20} />}
+                <input id='image' className={styles.imageUpload} type={'file'} placeholder="image" accept="image/*"  name="image" onChange={handlePostImage} hidden/>
+            </div>
+          </label> 
 
           <TextArea
             label="About"

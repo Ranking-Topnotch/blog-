@@ -78,6 +78,13 @@
   font-weight: 500;
 }
 
+.avatar{
+  border-radius: 50%;
+  height: 5em;
+  width: 5em;
+  margin-bottom: 1em;
+}
+
 @media (max-width: 576px) {
   .formCard {
     padding: 1.5rem;

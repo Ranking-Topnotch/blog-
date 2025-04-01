@@ -13,11 +13,9 @@ const ProtectedRoute = () => {
         const checkAuth = async () => {
             try {
                 const { sessionActive, member } = await userSession();
-        console.log("checking", sessionActive, member)
                 if (sessionActive) {
                     setIsAuthenticated(true);
                     setMember(member);
-                    console.log(member, isAuthenticated)
                 } else {
                     setIsAuthenticated(false);
                     setMember(null);

@@ -72,7 +72,9 @@ module.exports = {
     },
 
     deleteBlogById: async ( req, res ) => {
+        console.log("delete")
         const { memberId, blogId } = req.body
+        console.log(memberId, blogId)
         try{
             await connectToDb()
             const blog = await Blog.findOne({_id: blogId})

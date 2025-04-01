@@ -12,13 +12,12 @@ import toast from "react-hot-toast";
 import styles from "./blogId.module.css"
 import Input from "../../component/input/Input"
 import { UserContext } from "../../context/UserContext"
+import Avatar from '../../assest/noavatar.png'
 
 const BlogId = () => {
   const navigate = useNavigate()
-  const { member } = useContext(UserContext)
-  console.log(member)
+  const { member, logout } = useContext(UserContext)
   const { id } = useParams()
-  console.log(id)
   const [blog, setBlog] = useState(null)
   const [loading, setLoading] = useState(true)
   const [liked, setLiked] = useState(false)
@@ -32,15 +31,11 @@ const BlogId = () => {
     username: '',
     content: ''
   })
-  console.log(blog)
   
-  
-
   const fetchData = async () => {
         try{
           const res = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/member/blog/${id}`);
           const resData = await res.json();
-          console.log(resData.blogId)
           setBlog(resData.blogId);
           setComments(resData.comment)
           setLoading(false)
@@ -52,8 +47,9 @@ const BlogId = () => {
         fetchData();
       }, [ id ]);
     
+      
       useEffect(() => {
-        if(member._id && id){
+        if(member?._id && id){
           setPostComment(prev => ({
             ...prev,
             userId: member._id,
@@ -61,8 +57,8 @@ const BlogId = () => {
             username: member.username
           }));
         }
-      }, [member._id, id]);
-    console.log(postComment)
+      }, [member?._id  || '', id]);
+      
       const handleCommentChange = (e) => {
         const { name, value } = e.target;
     
@@ -84,7 +80,6 @@ const BlogId = () => {
       //commenting
       const handleCommentSubmit = async (e) => {
         e.preventDefault();
-        console.log(postComment)
     
         const fetchData = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/membercomment/comment`, {
           method: "POST",
@@ -108,7 +103,6 @@ const BlogId = () => {
       };
     
       const likePost = async () => {
-        console.log({ userId: member._id, id })
         const fetchData = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/member/blog/likes`, {
           method: "POST",
           headers: {
@@ -129,18 +123,20 @@ const BlogId = () => {
       }
     
       const deleteBlog = async (memberId, blogId) => {
+        console.log(memberId, blogId)
         await refreshToken()
         const accessToken = `; ${document.cookie}`.split(`; accessToken=`).pop().split(';').shift();
-          const fetchData = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/member/deleteblog`, {
-            method: "POST",
-            headers: {
-                "content-type": "application/json",
-                "Authorization": `Bearer ${accessToken}`
-            },
-            body: JSON.stringify({
-              memberId, 
-              blogId
-            })
+        console.log(accessToken)
+        const fetchData = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/member/blog/deleteblog`, {
+          method: "DELETE",
+          headers: {
+              "content-type": "application/json",
+              "Authorization": `Bearer ${accessToken}`
+          },
+          body: JSON.stringify({
+            memberId, 
+            blogId
+          })
         })
     
         const resData = await fetchData.json()
@@ -150,6 +146,7 @@ const BlogId = () => {
           navigate('/blog')
         }else if(resData.message === "Not authorized"){
           toast(<p className={styles.alert}>{resData.message}</p>)
+          logout()
         } 
       }
     
@@ -180,6 +177,7 @@ const BlogId = () => {
     )
   }
 
+  if(!member) return;
   return (
     <div className={styles.blogDetailPage}>
       <div className="container">
@@ -191,17 +189,19 @@ const BlogId = () => {
           <header className={styles.blogHeader}>
             <div>
               <h1 className={styles.blogTitle}>{blog.title}</h1>
-              <MdOutlineDeleteSweep onClick={deleteBlog} className={styles.deleteButton}/>
+              { member._id === blog.userId && <MdOutlineDeleteSweep onClick={() => deleteBlog(member._id, blog._id)} className={styles.deleteButton}/>}
             </div>
-            <div className={styles.authorInfo}>
-              <div className={styles.avatar}>
-                <img src={blog.profile || "/placeholder.svg"} alt={blog.username} />
+            <Link to={`/profile/${blog.username}`}>
+              <div className={styles.authorInfo}>
+                <div className={styles.avatar}>
+                  <img src={blog.profile || Avatar} alt={blog.username} />
+                </div>
+                <div className={styles.authorDetails}>
+                  <h3 className={styles.authorName}>{blog.username}</h3>
+                  <p className={styles.date}>{formatDate(blog.createdAt)}</p>
+                </div>
               </div>
-              <div className={styles.authorDetails}>
-                <h3 className={styles.authorName}>{blog.username}</h3>
-                <p className={styles.date}>{formatDate(blog.createdAt)}</p>
-              </div>
-            </div>
+            </Link>
           </header>
 
           {blog.img && (
@@ -213,7 +213,7 @@ const BlogId = () => {
           <div className={styles.blogContent}>
             <p>{blog.body}</p>
             {/* In a real app, you would render the full blog content here */}
-            <p>
+            {/* <p>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et
               dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
               ea commodo consequat.
@@ -228,7 +228,7 @@ const BlogId = () => {
               <li>First important point about the topic</li>
               <li>Second key insight that readers should remember</li>
               <li>Final thought to conclude the article</li>
-            </ul>
+            </ul> */}
           </div>
 
           <div className={styles.blogActions}>

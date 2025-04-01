@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom"
 import styles from "./blogCard.module.css"
+import Avatar from "../../assest/noavatar.png"
 
 const BlogCard = ({ blog }) => {
   // Format date
@@ -24,7 +25,7 @@ const BlogCard = ({ blog }) => {
       <div className={styles.content}>
         <div className={styles.authorInfo}>
           <div className={styles.avatar}>
-            <img src={blog.profile || "/placeholder-avatar.jpg"} alt={blog.username} />
+            <img src={blog.profile || Avatar } alt={blog.username} />
           </div>
           <div className={styles.authorDetails}>
             <h4 className={styles.authorName}>{blog.username}</h4>

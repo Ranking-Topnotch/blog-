@@ -14,6 +14,7 @@ const RegisterForm = () => {
     email: "",
     password: "",
     confirmPassword: "",
+    image: "",
     img: "",
   })
   const [errors, setErrors] = useState({})
@@ -26,17 +27,6 @@ const RegisterForm = () => {
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }))
     }
-  }
-
-  const handleImageUpoad = async(e) => {
-    const data = await ImageUtility(e.target.files[0])
-
-    setFormData((prev) => {
-      return{
-        ...prev,
-        img: data
-      }
-    })
   }
 
   const validateForm = () => {
@@ -68,11 +58,51 @@ const RegisterForm = () => {
     return Object.keys(newErrors).length === 0
   }
 
+  const uploadImage = async (type) => {
+      let data = new FormData()
+      data.append("file", type === 'image' ? formData.img : '')
+      data.append("upload_preset", type === 'image' ? 'images_preset' : '')  
+  
+      try{
+          let cloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
+          let resourceType = type === 'image' ? formData.img : 'video';
+          let api = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
+      
+          const fetchData = await fetch(api, {
+              method: "POST",
+              body: data
+          })
+  
+          const res = await fetchData.json()
+          return res.secure_url
+      }catch(err){
+          console.log(err)
+      }
+  }
+  
+  const handlePostImage = async(e) => {
+      const data = await ImageUtility(e.target.files[0])
+  
+      setFormData((prev) => {
+          return{
+              ...prev,
+              image: data,
+              img: e.target.files[0]
+          }
+      })
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
 
     if (validateForm()) {
-            
+
+      const imgUrl = await uploadImage('image');
+      
+      setFormData((prev) => ({
+          ...prev,
+          image: imgUrl
+      })); 
       const fetchData = await fetch(`${process.env.REACT_APP_SERVER_DOMAIN}/register`, {
         method: "POST",
         headers: {
@@ -107,6 +137,13 @@ const RegisterForm = () => {
           <p className={styles.formSubtitle}>Join our community of developers</p>
 
           <form onSubmit={handleSubmit} className={styles.form}>
+            <label htmlFor='avatar'>
+              <div>
+                { formData.image ? <img className={styles.avatar} src={formData.image} alt='blog' height={20} width={20} /> : <img className={styles.avatar} src={Avatar} alt='blog' height={20} width={20} />}
+                <input id='avatar' type={'file'} placeholder="image" accept="image/*" onChange={handlePostImage} name="img" hidden/>
+              </div>
+            </label>
+
             <Input
               label="Username"
               id="username"
@@ -153,7 +190,7 @@ const RegisterForm = () => {
               error={errors.confirmPassword}
               required
             />
-
+{/* 
             <Input
               label="Profile Image URL (optional)"
               id="img"
@@ -161,13 +198,8 @@ const RegisterForm = () => {
               value={formData.img}
               onChange={handleChange}
               placeholder="https://example.com/image.jpg"
-            />
-            <label htmlFor='avatar'>
-              <div>
-              { formData.img ? <img className={styles.avatar} src={formData.img} alt='blog' height={20} width={20} /> : <img className={styles.avatar} src={Avatar} alt='blog' height={20} width={20} />}
-              <input id='avatar' type={'file'} placeholder="image" accept="image/*" onChange={handleImageUpoad} name="img" hidden/>
-            </div>
-            </label>
+            /> */}
+            
 
             <Button type="submit" fullWidth>
               Sign Up
