@@ -46,7 +46,12 @@ module.exports = {
     },
 
     userSession: ( req, res ) =>  {
-        
+        //added
+        if (req.user) {
+        console.log("User found in session:", req.user);
+        return res.status(200).json({ sessionActive: true, member: req.user });
+        }
+         
         const refreshtoken = req.cookies.refreshToken
         if(!refreshtoken){
             return res.status(200).json({ sessionActive: false });
