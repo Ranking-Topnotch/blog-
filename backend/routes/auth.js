@@ -4,14 +4,18 @@ const passport = require('passport')
 const CLIENT_URL = process.env.CLIENT_URL
 
 router.get('/login/success', (req, res) => {
-    if(req.user){
+    console.log("User session data:", req.user);  // Debugging line
+    if (req.user) {
         res.status(200).json({ 
             user: req.user,  
             message: "login successful", 
             success: true 
         })
+    } else {
+        res.status(401).json({ message: "User not authenticated" });
     }
-})
+});
+
 
 router.get('/login/failed', (req, res) => {
     res.status(401).json({ 
