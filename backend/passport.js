@@ -14,6 +14,7 @@ passport.use(new GoogleStrategy({
     scope: ['email']
   },
   async function(accessToken, refreshToken, profile, cb) {
+      
     try{
       await connectToDb()
       
@@ -28,12 +29,12 @@ passport.use(new GoogleStrategy({
 
         newMember.signInWithGoogle();
       }
-
+        
       await newMember.save()
-
+        console.log("memeb", newMember)
       const accessToken = jwt.sign({email: profile._json.email, username: profile.name.givenName, _id: newMember._id, img: newMember.img}, process.env.ACCESS_TOKEN_KEY, { expiresIn: "1m"} )
       const refreshToken = jwt.sign({email: profile._json.email, username: profile.name.givenName, _id: newMember._id, img: newMember.img}, process.env.REFRESH_TOKEN_KEY, { expiresIn: "10m"} )
-
+        console.log(accessToken, "tokeen", refreshToken")
       return cb(null, newMember, { accessToken, refreshToken });
     }catch(err){
       return cb(err);
