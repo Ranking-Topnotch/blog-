@@ -19,17 +19,36 @@ const app = express()
 const PORT = process.env.PORT || 8001
 
 
-app.use(
-    session({
-      secret: 'secret', // Change this to a secret string
-      resave: false,
-      saveUninitialized: false,
-      cookie: {
-          secure: false //change to false
-      }, // Set secure to true if using HTTPS
+app.use(cors({
+    origin: ["http://localhost:3000", "https://blog-khaki-tau-50.vercel.app"],
+    methods: "GET,POST,PUT,DELETE",
+    credentials: true
+}));
+
+app.use(session({
+    secret: 'secret', 
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true, 
+        secure: process.env.NODE_ENV === "production", 
+        sameSite: "None" 
+    }
+}));
+
+
+
+// app.use(
+//     session({
+//       secret: 'secret', // Change this to a secret string
+//       resave: false,
+//       saveUninitialized: false,
+//       cookie: {
+//           secure: false //change to false
+//       }, // Set secure to true if using HTTPS
         
-    })
-);
+//     })
+// );
 
 app.use(cookieparser())
 
