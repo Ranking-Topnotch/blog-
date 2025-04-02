@@ -19,22 +19,13 @@ const app = express()
 const PORT = process.env.PORT || 8001
 
 
-const allowedOrigins = [
-    "http://localhost:3000",
-    "https://blog-khaki-tau-50.vercel.app",
-    "https://blog-7j26.onrender.com"
-];
+
 
 app.use(cors({
-    origin: function (origin, callback) {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error("Not allowed by CORS"));
-        }
-    },
+    origin: "https://blog-khaki-tau-50.vercel.app"
     methods: "GET,POST,PUT,DELETE",
-    credentials: true
+    credentials: true,
+    optionsSuccessStatus: 204,
 }));
 
 app.use(session({
@@ -42,14 +33,15 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        httpOnly: true, 
-        secure: process.env.NODE_ENV === "production", 
-        sameSite: "None" 
+         secure: process.env.NODE_ENV === "production", // true in production
+      sameSite: "none", // Critical for cross-domain cookies
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      domain: process.env.NODE_ENV === "production" ? ".vercel.app" : "localhost",  
     }
 }));
 
 
-
+app.set("trust proxy", 1)
 // app.use(
 //     session({
 //       secret: 'secret', // Change this to a secret string
