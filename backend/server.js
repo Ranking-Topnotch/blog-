@@ -22,7 +22,7 @@ const PORT = process.env.PORT || 8001
 
 
 app.use(cors({
-    origin: "https://blog-khaki-tau-50.vercel.app"
+    origin: "https://blog-khaki-tau-50.vercel.app",
     methods: "GET,POST,PUT,DELETE",
     credentials: true,
     optionsSuccessStatus: 204,
