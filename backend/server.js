@@ -22,23 +22,21 @@ const PORT = process.env.PORT || 8001
 
 
 app.use(cors({
-    origin: "https://blog-khaki-tau-50.vercel.app",
-    methods: "GET,POST,PUT,DELETE",
-    credentials: true,
-    optionsSuccessStatus: 204,
-}));
+  origin: "https://blog-khaki-tau-50.vercel.app",
+  methods: "GET,POST,PUT,DELETE",
+  credentials: true, 
+}))
 
 app.use(session({
-    secret: 'secret', 
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-         secure: process.env.NODE_ENV === "production", // true in production
-      sameSite: "none", // Critical for cross-domain cookies
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      domain: process.env.NODE_ENV === "production" ? ".vercel.app" : "localhost",  
-    }
-}));
+  secret: "secret",
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",  // ✅ Secure cookies in production
+    sameSite: "None",
+  }
+}))
 
 
 app.set("trust proxy", 1)
