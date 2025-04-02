@@ -22,12 +22,21 @@ const CLIENT_URL = process.env.CLIENT_URL
 // })
 
 router.get("/login/success", (req, res) => {
-  // Add CORS headers explicitly for this route
-  res.header("Access-Control-Allow-Origin", CLIENT_URL)
+  // Get the origin from the request
+  const origin = req.headers.origin
+
+  // Set the CORS header to match the exact origin of the request
+  if (origin) {
+    res.header("Access-Control-Allow-Origin", origin)
+  } else {
+    res.header("Access-Control-Allow-Origin", CLIENT_URL)
+  }
+
   res.header("Access-Control-Allow-Credentials", true)
   res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS")
   res.header("Access-Control-Allow-Headers", "Origin,X-Requested-With,Content-Type,Accept,Authorization")
 
+  console.log("Request origin:", req.headers.origin)
   console.log("User session data:", req.user ? "User exists in session" : "No user in session")
   console.log("Session user data:", req.session?.user ? "User exists in session.user" : "No user in session.user")
   console.log("Session ID:", req.sessionID)
@@ -48,7 +57,6 @@ router.get("/login/success", (req, res) => {
     res.status(401).json({ message: "User not authenticated" })
   }
 })
-
 
 router.get('/login/failed', (req, res) => {
     res.status(401).json({ 
@@ -73,10 +81,12 @@ router.get('/logout', (req, res) => {
 
 router.get('/google', passport.authenticate('google', { scope: ["profile", "email"]}))
 
-// Update the Google callback route
 router.get("/google/callback", (req, res, next) => {
-  // Add CORS headers explicitly for this route
-  res.header("Access-Control-Allow-Origin", CLIENT_URL)
+  // Get the origin from the request or use the CLIENT_URL
+  const origin = req.headers.origin || CLIENT_URL
+
+  // Set the CORS header to match the exact origin
+  res.header("Access-Control-Allow-Origin", origin)
   res.header("Access-Control-Allow-Credentials", true)
 
   passport.authenticate("google", (err, user, info) => {
@@ -129,6 +139,7 @@ router.get("/google/callback", (req, res, next) => {
     })
   })(req, res, next)
 })
+
 
 // router.get("/google/callback", (req, res, next) => {
 //   passport.authenticate("google", (err, user, info) => {
