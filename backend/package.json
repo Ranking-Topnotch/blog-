@@ -18,8 +18,8 @@
     "passport-google-oauth20": "^2.0.0"
   },
   "scripts": {
-    "dev": "nodemon server.js",
-    "start": "node server.js"
+    "dev": "node init && nodemon server.js",
+    "start": "node init && node server.js"
   },
   "name": "backend",
   "version": "1.0.0",
